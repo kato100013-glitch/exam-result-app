@@ -35,11 +35,12 @@
       color: var(--ink);
       font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
       background: var(--bg);
-      overflow: hidden;
+      overflow: auto;
     }
 
     button,
     input,
+    select,
     textarea {
       font: inherit;
     }
@@ -126,6 +127,7 @@
     }
 
     input,
+    select,
     textarea {
       width: 100%;
       border: 1px solid var(--line);
@@ -135,7 +137,8 @@
       outline: none;
     }
 
-    input {
+    input,
+    select {
       min-height: 46px;
       padding: 0 13px;
     }
@@ -148,9 +151,16 @@
     }
 
     input:focus,
+    select:focus,
     textarea:focus {
       border-color: var(--lime-2);
       box-shadow: 0 0 0 3px rgba(168, 200, 75, .2);
+    }
+
+    .class-tools {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr);
+      gap: 12px;
     }
 
     .setup-actions {
@@ -220,6 +230,7 @@
       height: 100vh;
       padding: 10px;
       background: #ffffff;
+      overflow: hidden;
     }
 
     .board {
@@ -411,6 +422,7 @@
       }
 
       .form-grid,
+      .class-tools,
       .preview {
         grid-template-columns: 1fr;
       }
@@ -454,6 +466,17 @@
           <button class="btn accent" id="startBtn" type="button">発表画面へ</button>
         </div>
 
+        <div class="class-tools">
+          <div class="field">
+            <label for="className">クラス名</label>
+            <input id="className" value="1年A組">
+          </div>
+          <div class="field">
+            <label for="savedClass">保存済みクラス</label>
+            <select id="savedClass"></select>
+          </div>
+        </div>
+
         <div class="form-grid">
           <div class="field wide">
             <label for="examTitle">タイトル</label>
@@ -474,6 +497,10 @@
         </div>
 
         <div class="setup-actions">
+          <button class="btn" id="saveClassBtn" type="button">このクラスを保存</button>
+          <button class="btn secondary" id="loadClassBtn" type="button">読み込む</button>
+          <button class="btn secondary" id="newClassBtn" type="button">新規</button>
+          <button class="btn secondary" id="deleteClassBtn" type="button">削除</button>
           <button class="btn secondary" id="sampleBtn" type="button">サンプルに戻す</button>
         </div>
 
@@ -529,6 +556,8 @@
   <script>
     const setupScreen = document.querySelector("#setupScreen");
     const presentScreen = document.querySelector("#presentScreen");
+    const classNameInput = document.querySelector("#className");
+    const savedClassSelect = document.querySelector("#savedClass");
     const titleInput = document.querySelector("#examTitle");
     const classAverageInput = document.querySelector("#classAverage");
     const courseAverageInput = document.querySelector("#courseAverage");
@@ -536,8 +565,101 @@
     const boardEl = document.querySelector("#board");
     const distributionEl = document.querySelector("#distribution");
     const progressEl = document.querySelector("#progress");
+    const storageKey = "exam-result-app.classes";
     const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
     let revealIndex = 0;
+
+    function readSavedClasses() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeSavedClasses(classes) {
+      localStorage.setItem(storageKey, JSON.stringify(classes));
+    }
+
+    function currentClassData() {
+      return {
+        className: classNameInput.value.trim(),
+        title: titleInput.value,
+        classAverage: classAverageInput.value,
+        courseAverage: courseAverageInput.value,
+        scores: scoresInput.value
+      };
+    }
+
+    function applyClassData(data) {
+      classNameInput.value = data.className || "";
+      titleInput.value = data.title || "";
+      classAverageInput.value = data.classAverage || "";
+      courseAverageInput.value = data.courseAverage || "";
+      scoresInput.value = data.scores || "";
+      render();
+    }
+
+    function renderSavedClassOptions(selectedName = savedClassSelect.value) {
+      const classes = readSavedClasses();
+      const names = Object.keys(classes).sort((a, b) => a.localeCompare(b, "ja"));
+      savedClassSelect.innerHTML = "";
+      if (!names.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "保存データなし";
+        savedClassSelect.appendChild(option);
+        savedClassSelect.disabled = true;
+        return;
+      }
+      savedClassSelect.disabled = false;
+      names.forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        savedClassSelect.appendChild(option);
+      });
+      if (selectedName && classes[selectedName]) {
+        savedClassSelect.value = selectedName;
+      }
+    }
+
+    function saveCurrentClass() {
+      const data = currentClassData();
+      if (!data.className) {
+        alert("クラス名を入力してください。");
+        classNameInput.focus();
+        return;
+      }
+      const classes = readSavedClasses();
+      classes[data.className] = data;
+      writeSavedClasses(classes);
+      renderSavedClassOptions(data.className);
+    }
+
+    function loadSelectedClass() {
+      const classes = readSavedClasses();
+      const data = classes[savedClassSelect.value];
+      if (data) applyClassData(data);
+    }
+
+    function deleteSelectedClass() {
+      const name = savedClassSelect.value;
+      if (!name) return;
+      const classes = readSavedClasses();
+      delete classes[name];
+      writeSavedClasses(classes);
+      renderSavedClassOptions();
+    }
+
+    function clearClassForm() {
+      classNameInput.value = "";
+      titleInput.value = "";
+      classAverageInput.value = "";
+      courseAverageInput.value = "";
+      scoresInput.value = "";
+      render();
+    }
 
     function parseScores(value) {
       return value
@@ -670,15 +792,21 @@
     });
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
     document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
+    document.querySelector("#saveClassBtn").addEventListener("click", saveCurrentClass);
+    document.querySelector("#loadClassBtn").addEventListener("click", loadSelectedClass);
+    document.querySelector("#newClassBtn").addEventListener("click", clearClassForm);
+    document.querySelector("#deleteClassBtn").addEventListener("click", deleteSelectedClass);
+    savedClassSelect.addEventListener("change", loadSelectedClass);
     document.querySelector("#sampleBtn").addEventListener("click", () => {
       scoresInput.value = sampleScores;
+      classNameInput.value = "1年A組";
       titleInput.value = "1学期期末考査 数学I";
       classAverageInput.value = "68.4";
       courseAverageInput.value = "65.8";
       render();
     });
 
-    [titleInput, classAverageInput, courseAverageInput, scoresInput].forEach((field) => {
+    [classNameInput, titleInput, classAverageInput, courseAverageInput, scoresInput].forEach((field) => {
       field.addEventListener("input", render);
     });
 
@@ -694,6 +822,7 @@
       }
     });
 
+    renderSavedClassOptions();
     render();
   </script>
 </body>
