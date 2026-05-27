@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>定期考査 結果発表</title>
+  <style>
+    :root {
+      --bg: #f6f7f2;
+      --ink: #11140f;
+      --muted: #6d746c;
+      --line: #dcdfd8;
+      --panel: #ffffff;
+      --dark: #10120f;
+      --dark-2: #181b16;
+      --lime: #d7f36b;
+      --lime-2: #a8c84b;
+      --red: #ff5a52;
+      --amber: #f3b640;
+      --cyan: #63c7e8;
+      --shadow: 0 24px 70px rgba(17, 20, 15, .16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      color: var(--ink);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .screen {
+      min-height: 100vh;
+    }
+
+    .screen[hidden] {
+      display: none;
+    }
+
+    .setup {
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 3vw, 36px);
+      background:
+        linear-gradient(135deg, rgba(215, 243, 107, .32), transparent 34%),
+        linear-gradient(180deg, #fbfcf8, var(--bg));
+    }
+
+    .setup-panel {
+      width: min(980px, 100%);
+      display: grid;
+      gap: 22px;
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 44px);
+    }
+
+    .setup-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.wide {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input {
+      min-height: 46px;
+      padding: 0 13px;
+    }
+
+    textarea {
+      min-height: 180px;
+      padding: 13px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--lime-2);
+      box-shadow: 0 0 0 3px rgba(168, 200, 75, .2);
+    }
+
+    .setup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 8px;
+      padding: 0 18px;
+      background: var(--lime-2);
+      color: #fff;
+      font-weight: 900;
+      transition: transform .16s ease, background .16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: #e9ede5;
+      color: var(--ink);
+    }
+
+    .btn.accent {
+      background: var(--lime);
+      color: var(--ink);
+    }
+
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcf9;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .present {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 8px;
+      height: 100vh;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .board {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: clamp(8px, 1.2vw, 14px);
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 24px 70px rgba(17, 20, 15, .12);
+      padding: clamp(14px, 2.4vw, 28px);
+      color: var(--ink);
+    }
+
+    .board-title {
+      max-width: 980px;
+      font-size: clamp(26px, 4vw, 50px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .main-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(6px, 1.2vw, 12px);
+    }
+
+    .big-stat {
+      min-height: 0;
+      aspect-ratio: 1.18 / 1;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      align-items: center;
+      gap: 2px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8faf4;
+      padding: clamp(8px, 1.15vw, 14px);
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .big-stat span {
+      color: var(--muted);
+      font-size: clamp(11px, 1.15vw, 15px);
+      font-weight: 900;
+    }
+
+    .big-stat strong {
+      display: block;
+      align-self: center;
+      font-size: clamp(42px, 7.2vw, 96px);
+      line-height: .82;
+      letter-spacing: 0;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .24s ease, transform .24s ease;
+    }
+
+    .big-stat.is-visible strong {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .big-stat:nth-child(1) strong {
+      color: var(--red);
+    }
+
+    .big-stat:nth-child(2) strong {
+      color: var(--amber);
+    }
+
+    .big-stat:nth-child(3) strong {
+      color: var(--cyan);
+    }
+
+    .distribution {
+      display: grid;
+      align-content: start;
+      gap: 3px;
+      max-width: 1080px;
+    }
+
+    .dist-row {
+      display: grid;
+      grid-template-columns: minmax(72px, 116px) minmax(42px, 64px) minmax(120px, 1fr);
+      align-items: center;
+      gap: clamp(8px, 1.4vw, 16px);
+      min-height: 25px;
+      border-radius: 8px;
+      padding: 2px 6px;
+      opacity: 1;
+      transform: translateY(0);
+      transition: background .24s ease, box-shadow .24s ease;
+    }
+
+    .board.average-visible .dist-row.is-average-band {
+      background: #fff5d8;
+      box-shadow: inset 4px 0 0 var(--amber);
+    }
+
+    .range,
+    .count {
+      font-size: clamp(16px, 1.85vw, 24px);
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .range {
+      color: var(--ink);
+    }
+
+    .count {
+      color: var(--dark);
+      text-align: right;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .22s ease, transform .22s ease;
+    }
+
+    .dist-row.is-visible .count {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .board.average-visible .dist-row.is-average-band .range,
+    .board.average-visible .dist-row.is-average-band .count {
+      color: #8a5b00;
+    }
+
+    .bar-track {
+      height: clamp(14px, 1.55vw, 20px);
+      overflow: hidden;
+      border-radius: 999px;
+      background: #edf0e8;
+      opacity: 0;
+      transition: opacity .24s ease;
+    }
+
+    .board.graph-visible .bar-track {
+      opacity: 1;
+    }
+
+    .bar-fill {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--lime-2);
+      transition: width .44s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .board.graph-visible .dist-row.is-visible .bar-fill {
+      width: var(--w);
+    }
+
+    .board.graph-visible.average-visible .dist-row.is-average-band .bar-fill {
+      background: var(--amber);
+    }
+
+    .graph-marker {
+      display: none;
+    }
+
+    .present-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+    }
+
+    .progress {
+      min-width: 76px;
+      color: var(--muted);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .setup-head,
+      .setup-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .form-grid,
+      .preview {
+        grid-template-columns: 1fr;
+      }
+
+      .main-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .big-stat {
+        aspect-ratio: 1.08 / 1;
+        padding: 7px;
+      }
+
+      .big-stat strong {
+        font-size: clamp(42px, 9vw, 74px);
+      }
+
+      .present {
+        padding: 10px;
+      }
+
+      .board {
+        min-height: calc(100vh - 102px);
+      }
+
+      .dist-row {
+        grid-template-columns: 82px 42px 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="screen setup" id="setupScreen">
+      <div class="setup-panel">
+        <div class="setup-head">
+          <div>
+            <p class="sub">EXAM RESULT</p>
+            <h1>定期考査 結果発表</h1>
+          </div>
+          <button class="btn accent" id="startBtn" type="button">発表画面へ</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field wide">
+            <label for="examTitle">タイトル</label>
+            <input id="examTitle" value="1学期期末考査 数学I">
+          </div>
+          <div class="field">
+            <label for="classAverage">クラス平均</label>
+            <input id="classAverage" type="number" min="0" max="100" step="0.1" value="68.4">
+          </div>
+          <div class="field">
+            <label for="courseAverage">コース平均</label>
+            <input id="courseAverage" type="number" min="0" max="100" step="0.1" value="65.8">
+          </div>
+          <div class="field wide">
+            <label for="scores">点数</label>
+            <textarea id="scores">98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21</textarea>
+          </div>
+        </div>
+
+        <div class="setup-actions">
+          <button class="btn secondary" id="sampleBtn" type="button">サンプルに戻す</button>
+        </div>
+
+        <div class="preview" aria-label="集計プレビュー">
+          <div class="metric">
+            <span>受験者数</span>
+            <strong id="total">0</strong>
+          </div>
+          <div class="metric">
+            <span>最高点</span>
+            <strong id="maxScore">0</strong>
+          </div>
+          <div class="metric">
+            <span>入力平均</span>
+            <strong id="averageScore">0</strong>
+          </div>
+          <div class="metric">
+            <span>最多帯</span>
+            <strong id="modeBand">-</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen present" id="presentScreen" hidden>
+      <div class="board" id="board">
+        <h2 class="board-title" id="boardTitle">1学期期末考査 数学I</h2>
+        <div class="main-stats">
+          <div class="big-stat" data-step>
+            <span>最高点</span>
+            <strong id="boardMax">0</strong>
+          </div>
+          <div class="big-stat" data-step>
+            <span>クラス平均</span>
+            <strong id="boardClassAverage">0</strong>
+          </div>
+          <div class="big-stat" data-step>
+            <span>コース平均</span>
+            <strong id="boardCourseAverage">0</strong>
+          </div>
+        </div>
+        <div class="distribution" id="distribution"></div>
+      </div>
+      <div class="present-actions">
+        <button class="btn secondary" id="backBtn" type="button">入力へ戻る</button>
+        <button class="btn accent" id="nextBtn" type="button">次を発表</button>
+        <button class="btn secondary" id="resetRevealBtn" type="button">最初から</button>
+        <span class="progress" id="progress">0 / 0</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const setupScreen = document.querySelector("#setupScreen");
+    const presentScreen = document.querySelector("#presentScreen");
+    const titleInput = document.querySelector("#examTitle");
+    const classAverageInput = document.querySelector("#classAverage");
+    const courseAverageInput = document.querySelector("#courseAverage");
+    const scoresInput = document.querySelector("#scores");
+    const boardEl = document.querySelector("#board");
+    const distributionEl = document.querySelector("#distribution");
+    const progressEl = document.querySelector("#progress");
+    const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
+    let revealIndex = 0;
+
+    function parseScores(value) {
+      return value
+        .split(/[\s,、]+/)
+        .map((score) => Number(score.trim()))
+        .filter((score) => Number.isFinite(score) && score >= 0 && score <= 100);
+    }
+
+    function formatNumber(value) {
+      if (!Number.isFinite(value)) return "0";
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+
+    function niceGraphMax(value) {
+      if (value <= 5) return 5;
+      if (value <= 10) return 10;
+      if (value <= 20) return 20;
+      return Math.ceil(value / 10) * 10;
+    }
+
+    function buildDistribution(scores) {
+      const ranges = [{ label: "100", min: 100, max: 100 }];
+      for (let high = 99; high >= 19; high -= 10) {
+        ranges.push({ label: `${high - 9}〜${high}`, min: high - 9, max: high });
+      }
+      ranges.push({ label: "0〜9", min: 0, max: 9 });
+
+      const rows = ranges.map((range) => ({
+        label: range.label,
+        min: range.min,
+        max: range.max,
+        count: scores.filter((score) => score >= range.min && score <= range.max).length
+      }));
+      const maxCount = niceGraphMax(Math.max(1, ...rows.map((row) => row.count)));
+      return rows.map((row) => ({
+        ...row,
+        width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%`
+      }));
+    }
+
+    function getStats() {
+      const scores = parseScores(scoresInput.value);
+      const distribution = buildDistribution(scores);
+      const max = scores.length ? Math.max(...scores) : 0;
+      const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
+      const mode = distribution.reduce((best, row) => row.count > best.count ? row : best, distribution[0]);
+      return { scores, distribution, max, average, mode };
+    }
+
+    function render() {
+      const stats = getStats();
+      document.querySelector("#total").textContent = stats.scores.length;
+      document.querySelector("#maxScore").textContent = formatNumber(stats.max);
+      document.querySelector("#averageScore").textContent = formatNumber(stats.average);
+      document.querySelector("#modeBand").textContent = stats.mode ? stats.mode.label : "-";
+      document.querySelector("#boardTitle").textContent = titleInput.value || "定期考査 結果発表";
+      document.querySelector("#boardMax").textContent = formatNumber(stats.max);
+      document.querySelector("#boardClassAverage").textContent = formatNumber(Number(classAverageInput.value));
+      document.querySelector("#boardCourseAverage").textContent = formatNumber(Number(courseAverageInput.value));
+
+      distributionEl.innerHTML = "";
+      const classAverage = Number(classAverageInput.value);
+      stats.distribution.forEach((row) => {
+        const item = document.createElement("div");
+        item.className = "dist-row";
+        if (Number.isFinite(classAverage) && classAverage >= row.min && classAverage <= row.max) {
+          item.classList.add("is-average-band");
+        }
+        item.dataset.step = "";
+        item.style.setProperty("--w", row.width);
+        item.innerHTML = `
+          <span class="range">${row.label}</span>
+          <span class="count">${row.count}</span>
+          <span class="bar-track"><span class="bar-fill"></span></span>
+        `;
+        distributionEl.appendChild(item);
+      });
+      const graphMarker = document.createElement("div");
+      graphMarker.id = "graphMarker";
+      graphMarker.className = "graph-marker";
+      graphMarker.dataset.step = "";
+      distributionEl.appendChild(graphMarker);
+      resetReveal();
+    }
+
+    function revealItems() {
+      return [...document.querySelectorAll("[data-step]")];
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `${revealIndex} / ${revealItems().length}`;
+      document.querySelector("#nextBtn").textContent = revealIndex >= revealItems().length ? "発表済み" : "次を発表";
+    }
+
+    function resetReveal() {
+      revealIndex = 0;
+      boardEl.classList.remove("graph-visible");
+      boardEl.classList.remove("average-visible");
+      revealItems().forEach((item) => item.classList.remove("is-visible"));
+      updateProgress();
+    }
+
+    function revealNext() {
+      const items = revealItems();
+      if (revealIndex >= items.length) return;
+      const item = items[revealIndex];
+      item.classList.add("is-visible");
+      if (item.querySelector("#boardClassAverage")) {
+        boardEl.classList.add("average-visible");
+      }
+      if (item.id === "graphMarker") {
+        boardEl.classList.add("graph-visible");
+      }
+      revealIndex += 1;
+      updateProgress();
+    }
+
+    function openPresentation() {
+      render();
+      setupScreen.hidden = true;
+      presentScreen.hidden = false;
+      resetReveal();
+    }
+
+    document.querySelector("#startBtn").addEventListener("click", openPresentation);
+    document.querySelector("#backBtn").addEventListener("click", () => {
+      presentScreen.hidden = true;
+      setupScreen.hidden = false;
+      render();
+    });
+    document.querySelector("#nextBtn").addEventListener("click", revealNext);
+    document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
+    document.querySelector("#sampleBtn").addEventListener("click", () => {
+      scoresInput.value = sampleScores;
+      titleInput.value = "1学期期末考査 数学I";
+      classAverageInput.value = "68.4";
+      courseAverageInput.value = "65.8";
+      render();
+    });
+
+    [titleInput, classAverageInput, courseAverageInput, scoresInput].forEach((field) => {
+      field.addEventListener("input", render);
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (presentScreen.hidden) return;
+      if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") {
+        event.preventDefault();
+        revealNext();
+      }
+      if (event.key === "Escape") {
+        presentScreen.hidden = true;
+        setupScreen.hidden = false;
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
