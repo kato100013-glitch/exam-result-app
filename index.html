@@ -225,33 +225,33 @@
     .board {
       display: grid;
       grid-template-rows: auto auto 1fr;
-      gap: clamp(8px, 1.2vw, 14px);
+      gap: clamp(12px, 1.8vw, 22px);
       min-height: 0;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #ffffff;
       box-shadow: 0 24px 70px rgba(17, 20, 15, .12);
-      padding: clamp(14px, 2.4vw, 28px);
+      padding: clamp(18px, 2.8vw, 34px);
       color: var(--ink);
     }
 
     .board-title {
       max-width: 980px;
-      font-size: clamp(26px, 4vw, 50px);
+      font-size: clamp(28px, 3.2vw, 48px);
       line-height: 1.02;
       letter-spacing: 0;
     }
 
     .main-stats {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: clamp(6px, 1.2vw, 12px);
+      grid-template-columns: repeat(3, minmax(150px, 1fr));
+      gap: clamp(10px, 1.4vw, 18px);
+      width: min(900px, 100%);
     }
 
     .big-stat {
-      min-height: 0;
-      aspect-ratio: 1.18 / 1;
+      height: clamp(112px, 16vh, 150px);
       display: grid;
       grid-template-rows: auto 1fr;
       align-items: center;
@@ -259,7 +259,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #f8faf4;
-      padding: clamp(8px, 1.15vw, 14px);
+      padding: clamp(10px, 1.3vw, 16px);
       opacity: 1;
       transform: translateY(0);
     }
@@ -273,7 +273,7 @@
     .big-stat strong {
       display: block;
       align-self: center;
-      font-size: clamp(42px, 7.2vw, 96px);
+      font-size: clamp(42px, 5.2vw, 76px);
       line-height: .82;
       letter-spacing: 0;
       opacity: 0;
@@ -301,8 +301,9 @@
     .distribution {
       display: grid;
       align-content: start;
-      gap: 3px;
-      max-width: 1080px;
+      gap: clamp(4px, .7vw, 9px);
+      max-width: 1120px;
+      width: min(1120px, 100%);
     }
 
     .dist-row {
@@ -310,9 +311,9 @@
       grid-template-columns: minmax(72px, 116px) minmax(42px, 64px) minmax(120px, 1fr);
       align-items: center;
       gap: clamp(8px, 1.4vw, 16px);
-      min-height: 25px;
+      min-height: clamp(27px, 3.3vh, 36px);
       border-radius: 8px;
-      padding: 2px 6px;
+      padding: 3px 8px;
       opacity: 1;
       transform: translateY(0);
       transition: background .24s ease, box-shadow .24s ease;
@@ -325,7 +326,7 @@
 
     .range,
     .count {
-      font-size: clamp(16px, 1.85vw, 24px);
+      font-size: clamp(18px, 1.65vw, 26px);
       font-weight: 900;
       line-height: 1;
       white-space: nowrap;
@@ -354,7 +355,7 @@
     }
 
     .bar-track {
-      height: clamp(14px, 1.55vw, 20px);
+      height: clamp(16px, 1.35vw, 22px);
       overflow: hidden;
       border-radius: 999px;
       background: #edf0e8;
@@ -419,12 +420,12 @@
       }
 
       .big-stat {
-        aspect-ratio: 1.08 / 1;
+        height: clamp(92px, 14vh, 118px);
         padding: 7px;
       }
 
       .big-stat strong {
-        font-size: clamp(42px, 9vw, 74px);
+        font-size: clamp(36px, 8vw, 58px);
       }
 
       .present {
@@ -432,7 +433,7 @@
       }
 
       .board {
-        min-height: calc(100vh - 102px);
+        min-height: 0;
       }
 
       .dist-row {
