@@ -26,7 +26,7 @@ function getSheet() {
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME);
-    sheet.appendRow(["className", "title", "classAverage", "courseAverage", "scores", "averages", "distributions", "highestScore", "updatedAt"]);
+    sheet.appendRow(["className", "title", "classAverage", "courseAverage", "scores", "averages", "distributions", "highestScore", "revealMode", "updatedAt"]);
   }
   return sheet;
 }
@@ -35,7 +35,7 @@ function listClasses(sheet) {
   const values = sheet.getDataRange().getValues();
   const classes = {};
   for (let row = 1; row < values.length; row += 1) {
-    const [className, title, classAverage, courseAverage, scores, averagesJson, distributionsJson, highestScore] = values[row];
+    const [className, title, classAverage, courseAverage, scores, averagesJson, distributionsJson, highestScore, revealMode] = values[row];
     if (!className) continue;
     const averages = parseJsonArray(averagesJson) || [
       { label: "クラス平均", value: String(classAverage || "") },
@@ -51,6 +51,7 @@ function listClasses(sheet) {
       courseAverage: String(courseAverage || ""),
       scores: String(scores || ""),
       highestScore: String(highestScore || ""),
+      revealMode: String(revealMode || "line"),
       averages,
       distributions
     };
@@ -73,6 +74,7 @@ function saveClass(sheet, data) {
       JSON.stringify(data.averages || []),
       JSON.stringify(data.distributions || []),
       data.highestScore || "",
+      data.revealMode || "line",
       new Date()
     ];
     if (row) {

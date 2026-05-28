@@ -304,6 +304,13 @@
             <label for="highestScore">最高点</label>
             <input id="highestScore" type="number" min="0" max="100" step="0.1" value="98">
           </div>
+          <div class="field wide">
+            <label for="revealMode">度数分布の出し方</label>
+            <select id="revealMode">
+              <option value="line">点数帯ごとに出す</option>
+              <option value="block">分布ごとに一括で出す</option>
+            </select>
+          </div>
         </div>
 
         <section class="editor-section">
@@ -347,6 +354,7 @@
       </div>
       <div class="present-actions">
         <button class="btn secondary" id="backBtn" type="button">入力へ戻る</button>
+        <button class="btn secondary" id="prevBtn" type="button">一つ戻る</button>
         <button class="btn accent" id="nextBtn" type="button">次を発表</button>
         <button class="btn secondary" id="resetRevealBtn" type="button">最初から</button>
         <span class="progress" id="progress">0 / 0</span>
@@ -362,6 +370,7 @@
     const scriptUrlInput = document.querySelector("#scriptUrl");
     const titleInput = document.querySelector("#examTitle");
     const highestScoreInput = document.querySelector("#highestScore");
+    const revealModeSelect = document.querySelector("#revealMode");
     const averagesList = document.querySelector("#averagesList");
     const distributionsList = document.querySelector("#distributionsList");
     const mainStats = document.querySelector("#mainStats");
@@ -405,6 +414,7 @@
         className: data.className || "1年A組",
         title: data.title || "1学期中間考査",
         highestScore: data.highestScore || data.maxScore || data.highest || calculatedMax || "98",
+        revealMode: data.revealMode || "line",
         averages: Array.isArray(data.averages) ? data.averages : [
           { label: "クラス平均", value: data.classAverage || "68.4" },
           { label: "コース平均", value: data.courseAverage || "65.8" }
@@ -469,6 +479,7 @@
         className: classNameInput.value.trim(),
         title: titleInput.value,
         highestScore: highestScoreInput.value,
+        revealMode: revealModeSelect.value,
         averages,
         distributions,
         classAverage: averages.find((item) => item.label.includes("クラス"))?.value || averages[0]?.value || "",
@@ -482,6 +493,7 @@
       classNameInput.value = normalized.className;
       titleInput.value = normalized.title;
       highestScoreInput.value = normalized.highestScore;
+      revealModeSelect.value = normalized.revealMode || "line";
       setAverageItems(normalized.averages.length ? normalized.averages : [{ label: "クラス平均", value: "" }]);
       setDistributionItems(normalized.distributions.length ? normalized.distributions : [{ label: "クラス度数分布", scores: "" }]);
       render();
@@ -640,9 +652,11 @@
       });
 
       distributionEl.innerHTML = "";
+      const revealMode = revealModeSelect.value;
       distributions.forEach((source) => {
         const block = document.createElement("div");
         block.className = "distribution-block";
+        if (revealMode === "block") block.dataset.step = "";
         const title = document.createElement("div");
         title.className = "distribution-title";
         title.textContent = source.label || "度数分布";
@@ -651,7 +665,7 @@
           const item = document.createElement("div");
           item.className = "dist-row";
           if (Number.isFinite(highlightValue) && highlightValue >= row.min && highlightValue <= row.max) item.classList.add("is-average-band");
-          item.dataset.step = "";
+          if (revealMode === "line") item.dataset.step = "";
           item.style.setProperty("--w", row.width);
           item.innerHTML = `<span class="range">${row.label}</span><span class="count">${row.count}</span><span class="bar-track"><span class="bar-fill"></span></span>`;
           block.appendChild(item);
@@ -674,17 +688,31 @@
       revealIndex = 0;
       boardEl.classList.remove("graph-visible", "average-visible");
       revealItems().forEach((item) => item.classList.remove("is-visible"));
+      document.querySelectorAll(".dist-row").forEach((item) => item.classList.remove("is-visible"));
+      updateProgress();
+    }
+    function applyRevealItem(item) {
+      item.classList.add("is-visible");
+      if (item.classList.contains("distribution-block")) {
+        item.querySelectorAll(".dist-row").forEach((row) => row.classList.add("is-visible"));
+      }
+      if (item.dataset.averageTrigger === "true") boardEl.classList.add("average-visible");
+      if (item.id === "graphMarker") boardEl.classList.add("graph-visible");
+    }
+    function setRevealIndex(nextIndex) {
+      const items = revealItems();
+      revealIndex = Math.max(0, Math.min(nextIndex, items.length));
+      boardEl.classList.remove("graph-visible", "average-visible");
+      items.forEach((item) => item.classList.remove("is-visible"));
+      document.querySelectorAll(".dist-row").forEach((item) => item.classList.remove("is-visible"));
+      for (let index = 0; index < revealIndex; index += 1) applyRevealItem(items[index]);
       updateProgress();
     }
     function revealNext() {
-      const items = revealItems();
-      if (revealIndex >= items.length) return;
-      const item = items[revealIndex];
-      item.classList.add("is-visible");
-      if (item.dataset.averageTrigger === "true") boardEl.classList.add("average-visible");
-      if (item.id === "graphMarker") boardEl.classList.add("graph-visible");
-      revealIndex += 1;
-      updateProgress();
+      setRevealIndex(revealIndex + 1);
+    }
+    function revealPrevious() {
+      setRevealIndex(revealIndex - 1);
     }
     function openPresentation() {
       render();
@@ -693,8 +721,14 @@
       resetReveal();
     }
 
+    function isEditingText(event) {
+      const tag = event.target.tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || event.target.isContentEditable;
+    }
+
     document.querySelector("#startBtn").addEventListener("click", openPresentation);
     document.querySelector("#backBtn").addEventListener("click", () => { presentScreen.hidden = true; setupScreen.hidden = false; render(); });
+    document.querySelector("#prevBtn").addEventListener("click", revealPrevious);
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
     document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
     document.querySelector("#addAverageBtn").addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
@@ -718,10 +752,15 @@
         distributions: [{ label: "クラス度数分布", scores: sampleScores }]
       });
     });
-    [classNameInput, titleInput, highestScoreInput].forEach((field) => field.addEventListener("input", render));
+    [classNameInput, titleInput, highestScoreInput, revealModeSelect].forEach((field) => {
+      field.addEventListener("input", render);
+      field.addEventListener("change", render);
+    });
     window.addEventListener("keydown", (event) => {
       if (presentScreen.hidden) return;
+      if (event.key === "Backspace" && !isEditingText(event)) { event.preventDefault(); revealPrevious(); }
       if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") { event.preventDefault(); revealNext(); }
+      if (event.key === "ArrowLeft") { event.preventDefault(); revealPrevious(); }
       if (event.key === "Escape") { presentScreen.hidden = true; setupScreen.hidden = false; }
     });
 
