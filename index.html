@@ -356,6 +356,7 @@
         <button class="btn secondary" id="backBtn" type="button">入力へ戻る</button>
         <button class="btn secondary" id="prevBtn" type="button">一つ戻る</button>
         <button class="btn accent" id="nextBtn" type="button">次を発表</button>
+        <button class="btn secondary" id="bulkBtn" type="button">分布一括</button>
         <button class="btn secondary" id="resetRevealBtn" type="button">最初から</button>
         <span class="progress" id="progress">0 / 0</span>
       </div>
@@ -711,6 +712,25 @@
     function revealNext() {
       setRevealIndex(revealIndex + 1);
     }
+    function revealBulk() {
+      const items = revealItems();
+      if (revealIndex >= items.length) return;
+      const item = items[revealIndex];
+      if (!item.classList.contains("dist-row")) {
+        revealNext();
+        return;
+      }
+      const block = item.closest(".distribution-block");
+      let nextIndex = revealIndex;
+      while (
+        nextIndex < items.length &&
+        items[nextIndex].classList.contains("dist-row") &&
+        items[nextIndex].closest(".distribution-block") === block
+      ) {
+        nextIndex += 1;
+      }
+      setRevealIndex(nextIndex);
+    }
     function revealPrevious() {
       setRevealIndex(revealIndex - 1);
     }
@@ -730,6 +750,7 @@
     document.querySelector("#backBtn").addEventListener("click", () => { presentScreen.hidden = true; setupScreen.hidden = false; render(); });
     document.querySelector("#prevBtn").addEventListener("click", revealPrevious);
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
+    document.querySelector("#bulkBtn").addEventListener("click", revealBulk);
     document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
     document.querySelector("#addAverageBtn").addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
     document.querySelector("#addDistributionBtn").addEventListener("click", () => { distributionsList.appendChild(distributionItem("度数分布", "")); render(); });
@@ -759,6 +780,7 @@
     window.addEventListener("keydown", (event) => {
       if (presentScreen.hidden) return;
       if (event.key === "Backspace" && !isEditingText(event)) { event.preventDefault(); revealPrevious(); }
+      if (event.key === "Enter" && event.shiftKey) { event.preventDefault(); revealBulk(); return; }
       if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") { event.preventDefault(); revealNext(); }
       if (event.key === "ArrowLeft") { event.preventDefault(); revealPrevious(); }
       if (event.key === "Escape") { presentScreen.hidden = true; setupScreen.hidden = false; }
