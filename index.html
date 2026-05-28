@@ -204,19 +204,25 @@
     .distribution {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      align-content: start;
+      align-content: stretch;
       gap: clamp(8px, 1vw, 14px);
       min-height: 0;
       overflow: hidden;
     }
-    .distribution-block { display: grid; align-content: start; gap: 2px; min-width: 0; }
+    .distribution-block {
+      display: grid;
+      grid-template-rows: auto repeat(11, minmax(0, 1fr));
+      gap: clamp(3px, .55vh, 7px);
+      min-width: 0;
+      min-height: 0;
+    }
     .distribution-title { color: var(--muted); font-size: clamp(11px, .95vw, 14px); font-weight: 900; }
     .dist-row {
       display: grid;
       grid-template-columns: 68px 34px minmax(80px, 1fr);
       align-items: center;
       gap: clamp(6px, 1vw, 12px);
-      min-height: clamp(19px, 2.15vh, 27px);
+      min-height: 0;
       padding: 1px 6px;
       border-radius: 8px;
       transition: background .22s ease, box-shadow .22s ease;
