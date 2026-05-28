@@ -203,27 +203,27 @@
 
     .distribution {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       align-content: stretch;
-      gap: clamp(8px, 1vw, 14px);
+      gap: clamp(10px, 1.2vw, 18px);
       min-height: 0;
       overflow: hidden;
     }
     .distribution-block {
       display: grid;
       grid-template-rows: auto repeat(11, minmax(0, 1fr));
-      gap: clamp(3px, .55vh, 7px);
+      gap: clamp(4px, .65vh, 8px);
       min-width: 0;
       min-height: 0;
     }
-    .distribution-title { color: var(--muted); font-size: clamp(11px, .95vw, 14px); font-weight: 900; }
+    .distribution-title { color: var(--muted); font-size: clamp(14px, 1.2vw, 18px); font-weight: 900; }
     .dist-row {
       display: grid;
-      grid-template-columns: 68px 34px minmax(80px, 1fr);
+      grid-template-columns: 88px 44px minmax(100px, 1fr);
       align-items: center;
       gap: clamp(6px, 1vw, 12px);
       min-height: 0;
-      padding: 1px 6px;
+      padding: 2px 8px;
       border-radius: 8px;
       transition: background .22s ease, box-shadow .22s ease;
     }
@@ -231,13 +231,13 @@
       background: #fff5d8;
       box-shadow: inset 4px 0 0 var(--amber);
     }
-    .range, .count { font-size: clamp(13px, 1.15vw, 19px); font-weight: 900; line-height: 1; white-space: nowrap; }
+    .range, .count { font-size: clamp(18px, 1.65vw, 28px); font-weight: 900; line-height: 1; white-space: nowrap; }
     .count { text-align: right; opacity: 0; transform: translateY(5px); transition: opacity .2s ease, transform .2s ease; }
     .dist-row.is-visible .count { opacity: 1; transform: translateY(0); }
     .board.average-visible .dist-row.is-average-band .range,
     .board.average-visible .dist-row.is-average-band .count { color: #8a5b00; }
     .bar-track {
-      height: clamp(11px, .95vw, 16px);
+      height: clamp(15px, 1.2vw, 22px);
       overflow: hidden;
       border-radius: 999px;
       background: #edf0e8;
@@ -256,7 +256,7 @@
       .setup-head, .setup-actions { align-items: stretch; flex-direction: column; }
       .form-grid, .class-tools, .cloud-tools, .preview, .average-item, .distribution-item { grid-template-columns: 1fr; }
       .main-stats { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); }
-      .distribution { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .distribution { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
     }
   </style>
 </head>
