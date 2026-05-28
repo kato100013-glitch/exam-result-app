@@ -8,127 +8,66 @@
     :root {
       --bg: #f6f7f2;
       --ink: #11140f;
-      --muted: #6d746c;
+      --muted: #667064;
       --line: #dcdfd8;
-      --dark: #10120f;
       --lime: #d7f36b;
-      --lime-2: #a8c84b;
+      --green: #a8c84b;
       --red: #ff5a52;
       --amber: #f3b640;
       --cyan: #63c7e8;
-      --shadow: 0 24px 70px rgba(17, 20, 15, .16);
+      --shadow: 0 24px 70px rgba(17, 20, 15, .14);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-    }
-
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
     body {
       color: var(--ink);
       font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
       background: var(--bg);
-      overflow: auto;
     }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    h1, h2, p { margin: 0; }
 
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    .screen {
-      min-height: 100vh;
-    }
-
-    .screen[hidden] {
-      display: none;
-    }
+    .screen { min-height: 100vh; }
+    .screen[hidden] { display: none; }
 
     .setup {
       display: grid;
       place-items: center;
-      padding: clamp(16px, 3vw, 36px);
-      background:
-        linear-gradient(135deg, rgba(215, 243, 107, .32), transparent 34%),
-        linear-gradient(180deg, #fbfcf8, var(--bg));
+      padding: clamp(14px, 3vw, 32px);
+      background: linear-gradient(135deg, rgba(215, 243, 107, .28), transparent 34%), #f8faf4;
     }
-
     .setup-panel {
       width: min(1040px, 100%);
       display: grid;
-      gap: 18px;
-      background: rgba(255, 255, 255, .95);
+      gap: 16px;
+      padding: clamp(18px, 3.5vw, 36px);
       border: 1px solid var(--line);
       border-radius: 8px;
+      background: rgba(255, 255, 255, .96);
       box-shadow: var(--shadow);
-      padding: clamp(20px, 4vw, 42px);
     }
-
     .setup-head {
       display: flex;
-      align-items: end;
       justify-content: space-between;
-      gap: 18px;
+      align-items: end;
+      gap: 16px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 16px;
     }
+    .sub { color: var(--muted); font-size: 13px; font-weight: 800; }
+    h1 { font-size: clamp(28px, 4vw, 46px); line-height: 1.05; }
 
-    h1,
-    h2,
-    p {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: clamp(28px, 4vw, 48px);
-      line-height: 1.05;
-      letter-spacing: 0;
-    }
-
-    .sub {
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .form-grid,
-    .class-tools,
-    .cloud-tools {
+    .form-grid, .class-tools, .cloud-tools {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
-
-    .field {
-      display: grid;
-      gap: 7px;
-    }
-
-    .field.wide {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    input,
-    select,
-    textarea {
+    .field { display: grid; gap: 6px; }
+    .wide { grid-column: 1 / -1; }
+    label { color: var(--muted); font-size: 13px; font-weight: 800; }
+    input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -136,142 +75,76 @@
       color: var(--ink);
       outline: none;
     }
-
-    input,
-    select {
-      min-height: 44px;
-      padding: 0 12px;
-    }
-
-    textarea {
-      min-height: 118px;
-      padding: 12px;
-      resize: vertical;
-      line-height: 1.7;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--lime-2);
-      box-shadow: 0 0 0 3px rgba(168, 200, 75, .2);
+    input, select { min-height: 42px; padding: 0 12px; }
+    textarea { min-height: 86px; padding: 10px 12px; resize: vertical; line-height: 1.6; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(168, 200, 75, .18);
     }
 
     .editor-section {
       display: grid;
       gap: 10px;
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcf9;
-      padding: 14px;
     }
-
     .section-head {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
     }
-
-    .section-head h2 {
-      font-size: 16px;
-    }
-
-    .item-list {
-      display: grid;
-      gap: 10px;
-    }
-
+    .section-head h2 { font-size: 16px; }
+    .item-list { display: grid; gap: 9px; }
     .average-item {
       display: grid;
-      grid-template-columns: minmax(130px, 1fr) minmax(92px, 160px) auto;
-      gap: 10px;
+      grid-template-columns: minmax(140px, 1fr) minmax(90px, 150px) auto;
+      gap: 9px;
       align-items: end;
     }
-
     .distribution-item {
       display: grid;
-      grid-template-columns: minmax(150px, 240px) 1fr auto;
-      gap: 10px;
+      grid-template-columns: minmax(150px, 230px) 1fr auto;
+      gap: 9px;
       align-items: end;
-    }
-
-    .distribution-item textarea {
-      min-height: 84px;
     }
 
     .setup-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 9px;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 42px;
+      min-height: 40px;
+      padding: 0 15px;
       border-radius: 8px;
-      padding: 0 16px;
-      background: var(--lime-2);
+      background: var(--green);
       color: #fff;
       font-weight: 900;
-      transition: transform .16s ease, background .16s ease;
     }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn.secondary,
-    .btn.remove {
-      background: #e9ede5;
-      color: var(--ink);
-    }
-
-    .btn.accent {
-      background: var(--lime);
-      color: var(--ink);
-    }
-
-    .btn.remove {
-      min-width: 64px;
-      padding: 0 12px;
-    }
-
-    .status {
-      min-height: 20px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-    }
+    .btn.secondary, .btn.remove { background: #e9ede5; color: var(--ink); }
+    .btn.accent { background: var(--lime); color: var(--ink); }
+    .btn.remove { min-width: 62px; padding: 0 10px; }
+    .status { min-height: 18px; color: var(--muted); font-size: 13px; font-weight: 700; }
 
     .preview {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      gap: 9px;
     }
-
     .metric {
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 14px;
       background: #fbfcf9;
     }
-
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 6px;
-      font-size: 30px;
-      line-height: 1;
-    }
+    .metric span { display: block; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .metric strong { display: block; margin-top: 5px; font-size: 28px; line-height: 1; }
 
     .present {
       display: grid;
@@ -279,229 +152,105 @@
       gap: 8px;
       height: 100vh;
       padding: 10px;
-      background: #ffffff;
+      background: #fff;
       overflow: hidden;
     }
-
     .board {
       display: grid;
-      grid-template-rows: auto auto 1fr;
-      gap: clamp(10px, 1.4vw, 18px);
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: clamp(8px, 1.1vw, 14px);
       min-height: 0;
       overflow: hidden;
+      padding: clamp(14px, 2vw, 24px);
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 0 24px 70px rgba(17, 20, 15, .12);
-      padding: clamp(16px, 2.4vw, 30px);
-      color: var(--ink);
+      background: #fff;
+      box-shadow: 0 20px 56px rgba(17, 20, 15, .12);
     }
-
     .board-title {
-      max-width: 980px;
-      font-size: clamp(26px, 3vw, 46px);
-      line-height: 1.02;
-      letter-spacing: 0;
+      font-size: clamp(24px, 2.7vw, 42px);
+      line-height: 1.04;
     }
-
     .main-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-      gap: clamp(8px, 1.2vw, 14px);
+      grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+      gap: clamp(7px, 1vw, 12px);
       width: min(980px, 100%);
     }
-
     .big-stat {
-      height: clamp(92px, 13vh, 132px);
+      height: clamp(76px, 11vh, 118px);
       display: grid;
       grid-template-rows: auto 1fr;
       align-items: center;
-      gap: 2px;
+      padding: clamp(7px, 1vw, 12px);
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #f8faf4;
-      padding: clamp(9px, 1.1vw, 14px);
     }
-
-    .big-stat span {
-      color: var(--muted);
-      font-size: clamp(11px, 1vw, 14px);
-      font-weight: 900;
-    }
-
+    .big-stat span { color: var(--muted); font-size: clamp(10px, .95vw, 13px); font-weight: 900; }
     .big-stat strong {
-      display: block;
       align-self: center;
-      font-size: clamp(34px, 4.4vw, 68px);
-      line-height: .82;
+      font-size: clamp(28px, 3.7vw, 58px);
+      line-height: .86;
       opacity: 0;
       transform: translateY(8px);
-      transition: opacity .24s ease, transform .24s ease;
+      transition: opacity .22s ease, transform .22s ease;
     }
-
-    .big-stat.is-visible strong {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .big-stat:nth-child(1) strong {
-      color: var(--red);
-    }
-
-    .big-stat:nth-child(2) strong {
-      color: var(--amber);
-    }
-
-    .big-stat:nth-child(3) strong {
-      color: var(--cyan);
-    }
+    .big-stat.is-visible strong { opacity: 1; transform: translateY(0); }
+    .big-stat:nth-child(1) strong { color: var(--red); }
+    .big-stat:nth-child(2) strong { color: var(--amber); }
+    .big-stat:nth-child(3) strong { color: var(--cyan); }
 
     .distribution {
       display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       align-content: start;
-      gap: clamp(5px, .7vw, 10px);
-      width: min(1120px, 100%);
+      gap: clamp(8px, 1vw, 14px);
+      min-height: 0;
       overflow: hidden;
     }
-
-    .distribution-block {
-      display: grid;
-      gap: 3px;
-    }
-
-    .distribution-title {
-      color: var(--muted);
-      font-size: clamp(12px, 1.1vw, 15px);
-      font-weight: 900;
-    }
-
+    .distribution-block { display: grid; align-content: start; gap: 2px; min-width: 0; }
+    .distribution-title { color: var(--muted); font-size: clamp(11px, .95vw, 14px); font-weight: 900; }
     .dist-row {
       display: grid;
-      grid-template-columns: minmax(72px, 112px) minmax(38px, 58px) minmax(110px, 1fr);
+      grid-template-columns: 68px 34px minmax(80px, 1fr);
       align-items: center;
-      gap: clamp(8px, 1.4vw, 16px);
-      min-height: clamp(22px, 2.65vh, 31px);
+      gap: clamp(6px, 1vw, 12px);
+      min-height: clamp(19px, 2.15vh, 27px);
+      padding: 1px 6px;
       border-radius: 8px;
-      padding: 2px 8px;
-      transition: background .24s ease, box-shadow .24s ease;
+      transition: background .22s ease, box-shadow .22s ease;
     }
-
     .board.average-visible .dist-row.is-average-band {
       background: #fff5d8;
       box-shadow: inset 4px 0 0 var(--amber);
     }
-
-    .range,
-    .count {
-      font-size: clamp(15px, 1.45vw, 22px);
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .count {
-      color: var(--dark);
-      text-align: right;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity .22s ease, transform .22s ease;
-    }
-
-    .dist-row.is-visible .count {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    .range, .count { font-size: clamp(13px, 1.15vw, 19px); font-weight: 900; line-height: 1; white-space: nowrap; }
+    .count { text-align: right; opacity: 0; transform: translateY(5px); transition: opacity .2s ease, transform .2s ease; }
+    .dist-row.is-visible .count { opacity: 1; transform: translateY(0); }
     .board.average-visible .dist-row.is-average-band .range,
-    .board.average-visible .dist-row.is-average-band .count {
-      color: #8a5b00;
-    }
-
+    .board.average-visible .dist-row.is-average-band .count { color: #8a5b00; }
     .bar-track {
-      height: clamp(13px, 1.15vw, 19px);
+      height: clamp(11px, .95vw, 16px);
       overflow: hidden;
       border-radius: 999px;
       background: #edf0e8;
       opacity: 0;
-      transition: opacity .24s ease;
+      transition: opacity .22s ease;
     }
-
-    .board.graph-visible .bar-track {
-      opacity: 1;
-    }
-
-    .bar-fill {
-      display: block;
-      width: 0%;
-      height: 100%;
-      border-radius: inherit;
-      background: var(--lime-2);
-      transition: width .44s cubic-bezier(.2, .8, .2, 1);
-    }
-
-    .board.graph-visible .dist-row.is-visible .bar-fill {
-      width: var(--w);
-    }
-
-    .board.graph-visible.average-visible .dist-row.is-average-band .bar-fill {
-      background: var(--amber);
-    }
-
-    .graph-marker {
-      display: none;
-    }
-
-    .present-actions {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      min-height: 44px;
-    }
-
-    .progress {
-      min-width: 76px;
-      color: var(--muted);
-      font-weight: 900;
-      text-align: center;
-    }
+    .board.graph-visible .bar-track { opacity: 1; }
+    .bar-fill { display: block; width: 0%; height: 100%; border-radius: inherit; background: var(--green); transition: width .4s ease; }
+    .board.graph-visible .dist-row.is-visible .bar-fill { width: var(--w); }
+    .board.graph-visible.average-visible .dist-row.is-average-band .bar-fill { background: var(--amber); }
+    .graph-marker { display: none; }
+    .present-actions { display: flex; justify-content: center; align-items: center; gap: 9px; min-height: 42px; }
+    .progress { min-width: 72px; color: var(--muted); font-weight: 900; text-align: center; }
 
     @media (max-width: 760px) {
-      .setup-head,
-      .setup-actions {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .form-grid,
-      .class-tools,
-      .cloud-tools,
-      .preview,
-      .average-item,
-      .distribution-item {
-        grid-template-columns: 1fr;
-      }
-
-      .main-stats {
-        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-      }
-
-      .big-stat {
-        height: clamp(82px, 12vh, 108px);
-        padding: 7px;
-      }
-
-      .big-stat strong {
-        font-size: clamp(30px, 7vw, 50px);
-      }
-
-      .present {
-        padding: 10px;
-      }
-
-      .dist-row {
-        grid-template-columns: 78px 38px 1fr;
-      }
+      .setup-head, .setup-actions { align-items: stretch; flex-direction: column; }
+      .form-grid, .class-tools, .cloud-tools, .preview, .average-item, .distribution-item { grid-template-columns: 1fr; }
+      .main-stats { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); }
+      .distribution { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     }
   </style>
 </head>
@@ -523,7 +272,6 @@
             <input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
           </div>
         </div>
-
         <div class="setup-actions">
           <button class="btn secondary" id="saveScriptUrlBtn" type="button">URLを保存</button>
           <button class="btn secondary" id="syncCloudBtn" type="button">シートから同期</button>
@@ -542,9 +290,13 @@
         </div>
 
         <div class="form-grid">
-          <div class="field wide">
+          <div class="field">
             <label for="examTitle">タイトル</label>
             <input id="examTitle" value="1学期中間考査">
+          </div>
+          <div class="field">
+            <label for="highestScore">最高点</label>
+            <input id="highestScore" type="number" min="0" max="100" step="0.1" value="98">
           </div>
         </div>
 
@@ -573,22 +325,10 @@
         </div>
 
         <div class="preview" aria-label="集計プレビュー">
-          <div class="metric">
-            <span>受験者数</span>
-            <strong id="total">0</strong>
-          </div>
-          <div class="metric">
-            <span>最高点</span>
-            <strong id="maxScore">0</strong>
-          </div>
-          <div class="metric">
-            <span>入力平均</span>
-            <strong id="averageScore">0</strong>
-          </div>
-          <div class="metric">
-            <span>最多帯</span>
-            <strong id="modeBand">-</strong>
-          </div>
+          <div class="metric"><span>受験者数</span><strong id="total">0</strong></div>
+          <div class="metric"><span>最高点</span><strong id="maxScore">0</strong></div>
+          <div class="metric"><span>入力平均</span><strong id="averageScore">0</strong></div>
+          <div class="metric"><span>最多帯</span><strong id="modeBand">-</strong></div>
         </div>
       </div>
     </section>
@@ -615,6 +355,7 @@
     const savedClassSelect = document.querySelector("#savedClass");
     const scriptUrlInput = document.querySelector("#scriptUrl");
     const titleInput = document.querySelector("#examTitle");
+    const highestScoreInput = document.querySelector("#highestScore");
     const averagesList = document.querySelector("#averagesList");
     const distributionsList = document.querySelector("#distributionsList");
     const mainStats = document.querySelector("#mainStats");
@@ -625,40 +366,46 @@
     const storageKey = "exam-result-app.classes";
     const scriptUrlKey = "exam-result-app.scriptUrl";
     const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
-    const colorClasses = ["is-red", "is-amber", "is-cyan"];
     let revealIndex = 0;
 
-    function setStatus(message) {
-      statusText.textContent = message;
+    function setStatus(message) { statusText.textContent = message; }
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
-
+    function escapeAttribute(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
     function readSavedClasses() {
-      try {
-        return JSON.parse(localStorage.getItem(storageKey)) || {};
-      } catch {
-        return {};
-      }
+      try { return JSON.parse(localStorage.getItem(storageKey)) || {}; } catch { return {}; }
     }
+    function writeSavedClasses(classes) { localStorage.setItem(storageKey, JSON.stringify(classes)); }
 
-    function writeSavedClasses(classes) {
-      localStorage.setItem(storageKey, JSON.stringify(classes));
+    function parseScores(value) {
+      return String(value || "").split(/[\s,、]+/).map((score) => Number(score.trim())).filter((score) => Number.isFinite(score) && score >= 0 && score <= 100);
+    }
+    function formatNumber(value) {
+      if (!Number.isFinite(value)) return "0";
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+    function niceGraphMax(value) {
+      if (value <= 5) return 5;
+      if (value <= 10) return 10;
+      if (value <= 20) return 20;
+      return Math.ceil(value / 10) * 10;
     }
 
     function normalizeData(data = {}) {
-      const averages = Array.isArray(data.averages)
-        ? data.averages
-        : [
-            { label: "クラス平均", value: data.classAverage || "68.4" },
-            { label: "コース平均", value: data.courseAverage || "65.8" }
-          ];
-      const distributions = Array.isArray(data.distributions)
-        ? data.distributions
-        : [{ label: "クラス度数分布", scores: data.scores || sampleScores }];
+      const firstScores = data.scores || sampleScores;
+      const calculatedMax = Math.max(0, ...parseScores(firstScores));
       return {
         className: data.className || "1年A組",
         title: data.title || "1学期中間考査",
-        averages: averages.filter((item) => item && item.label !== ""),
-        distributions: distributions.filter((item) => item && item.label !== "")
+        highestScore: data.highestScore || data.maxScore || data.highest || calculatedMax || "98",
+        averages: Array.isArray(data.averages) ? data.averages : [
+          { label: "クラス平均", value: data.classAverage || "68.4" },
+          { label: "コース平均", value: data.courseAverage || "65.8" }
+        ],
+        distributions: Array.isArray(data.distributions) ? data.distributions : [
+          { label: "クラス度数分布", scores: firstScores }
+        ]
       };
     }
 
@@ -666,20 +413,11 @@
       const item = document.createElement("div");
       item.className = "average-item";
       item.innerHTML = `
-        <div class="field">
-          <label>項目名</label>
-          <input class="average-label" value="${escapeAttribute(label)}">
-        </div>
-        <div class="field">
-          <label>値</label>
-          <input class="average-value" type="number" min="0" max="100" step="0.1" value="${escapeAttribute(value)}">
-        </div>
+        <div class="field"><label>項目名</label><input class="average-label" value="${escapeAttribute(label)}"></div>
+        <div class="field"><label>値</label><input class="average-value" type="number" min="0" max="100" step="0.1" value="${escapeAttribute(value)}"></div>
         <button class="btn remove" type="button">削除</button>
       `;
-      item.querySelector(".remove").addEventListener("click", () => {
-        item.remove();
-        render();
-      });
+      item.querySelector(".remove").addEventListener("click", () => { item.remove(); render(); });
       item.querySelectorAll("input").forEach((input) => input.addEventListener("input", render));
       return item;
     }
@@ -688,75 +426,47 @@
       const item = document.createElement("div");
       item.className = "distribution-item";
       item.innerHTML = `
-        <div class="field">
-          <label>分布名</label>
-          <input class="distribution-label" value="${escapeAttribute(label)}">
-        </div>
-        <div class="field">
-          <label>点数</label>
-          <textarea class="distribution-scores">${escapeHtml(scores)}</textarea>
-        </div>
+        <div class="field"><label>分布名</label><input class="distribution-label" value="${escapeAttribute(label)}"></div>
+        <div class="field"><label>点数</label><textarea class="distribution-scores">${escapeHtml(scores)}</textarea></div>
         <button class="btn remove" type="button">削除</button>
       `;
-      item.querySelector(".remove").addEventListener("click", () => {
-        item.remove();
-        render();
-      });
+      item.querySelector(".remove").addEventListener("click", () => { item.remove(); render(); });
       item.querySelectorAll("input, textarea").forEach((input) => input.addEventListener("input", render));
       return item;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
-    function escapeAttribute(value) {
-      return escapeHtml(value).replace(/"/g, "&quot;");
     }
 
     function setAverageItems(items) {
       averagesList.innerHTML = "";
       items.forEach((item) => averagesList.appendChild(averageItem(item.label, item.value)));
     }
-
     function setDistributionItems(items) {
       distributionsList.innerHTML = "";
       items.forEach((item) => distributionsList.appendChild(distributionItem(item.label, item.scores)));
     }
-
     function getAverageItems() {
-      return [...averagesList.querySelectorAll(".average-item")]
-        .map((item) => ({
-          label: item.querySelector(".average-label").value.trim(),
-          value: item.querySelector(".average-value").value
-        }))
-        .filter((item) => item.label || item.value);
+      return [...averagesList.querySelectorAll(".average-item")].map((item) => ({
+        label: item.querySelector(".average-label").value.trim(),
+        value: item.querySelector(".average-value").value
+      })).filter((item) => item.label || item.value);
     }
-
     function getDistributionItems() {
-      return [...distributionsList.querySelectorAll(".distribution-item")]
-        .map((item) => ({
-          label: item.querySelector(".distribution-label").value.trim(),
-          scores: item.querySelector(".distribution-scores").value
-        }))
-        .filter((item) => item.label || item.scores);
+      return [...distributionsList.querySelectorAll(".distribution-item")].map((item) => ({
+        label: item.querySelector(".distribution-label").value.trim(),
+        scores: item.querySelector(".distribution-scores").value
+      })).filter((item) => item.label || item.scores);
     }
 
     function currentClassData() {
       const averages = getAverageItems();
       const distributions = getDistributionItems();
-      const classAverage = averages.find((item) => item.label.includes("クラス"))?.value || averages[0]?.value || "";
-      const courseAverage = averages.find((item) => item.label.includes("コース"))?.value || averages[1]?.value || "";
       return {
         className: classNameInput.value.trim(),
         title: titleInput.value,
+        highestScore: highestScoreInput.value,
         averages,
         distributions,
-        classAverage,
-        courseAverage,
+        classAverage: averages.find((item) => item.label.includes("クラス"))?.value || averages[0]?.value || "",
+        courseAverage: averages.find((item) => item.label.includes("コース"))?.value || averages[1]?.value || "",
         scores: distributions[0]?.scores || ""
       };
     }
@@ -765,6 +475,7 @@
       const normalized = normalizeData(data);
       classNameInput.value = normalized.className;
       titleInput.value = normalized.title;
+      highestScoreInput.value = normalized.highestScore;
       setAverageItems(normalized.averages.length ? normalized.averages : [{ label: "クラス平均", value: "" }]);
       setDistributionItems(normalized.distributions.length ? normalized.distributions : [{ label: "クラス度数分布", scores: "" }]);
       render();
@@ -775,10 +486,7 @@
       const names = Object.keys(classes).sort((a, b) => a.localeCompare(b, "ja"));
       savedClassSelect.innerHTML = "";
       if (!names.length) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "保存データなし";
-        savedClassSelect.appendChild(option);
+        savedClassSelect.innerHTML = '<option value="">保存データなし</option>';
         savedClassSelect.disabled = true;
         return;
       }
@@ -796,7 +504,6 @@
       localStorage.setItem(scriptUrlKey, scriptUrlInput.value.trim());
       setStatus("Apps Script URLを保存しました。");
     }
-
     function cloudRequest(params) {
       const baseUrl = scriptUrlInput.value.trim();
       if (!baseUrl) throw new Error("Google Apps Script URLを入力してください。");
@@ -806,43 +513,26 @@
         Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
         url.searchParams.set("callback", callbackName);
         const script = document.createElement("script");
-        const timer = setTimeout(() => {
-          cleanup();
-          reject(new Error("Googleスプレッドシートとの通信がタイムアウトしました。"));
-        }, 12000);
-        function cleanup() {
-          clearTimeout(timer);
-          delete window[callbackName];
-          script.remove();
-        }
+        const timer = setTimeout(() => { cleanup(); reject(new Error("Googleスプレッドシートとの通信がタイムアウトしました。")); }, 12000);
+        function cleanup() { clearTimeout(timer); delete window[callbackName]; script.remove(); }
         window[callbackName] = (result) => {
           cleanup();
-          if (result && result.ok) resolve(result);
-          else reject(new Error(result?.error || "Googleスプレッドシートの処理に失敗しました。"));
+          result && result.ok ? resolve(result) : reject(new Error(result?.error || "Googleスプレッドシートの処理に失敗しました。"));
         };
-        script.onerror = () => {
-          cleanup();
-          reject(new Error("Apps Script URLに接続できません。"));
-        };
+        script.onerror = () => { cleanup(); reject(new Error("Apps Script URLに接続できません。")); };
         script.src = url.toString();
         document.body.appendChild(script);
       });
     }
-
     async function syncFromCloud(selectedName) {
       const result = await cloudRequest({ action: "list" });
       writeSavedClasses(result.classes || {});
       renderSavedClassOptions(selectedName);
       return result.classes || {};
     }
-
     async function saveCurrentClass() {
       const data = currentClassData();
-      if (!data.className) {
-        alert("保存名を入力してください。");
-        classNameInput.focus();
-        return;
-      }
+      if (!data.className) { alert("保存名を入力してください。"); classNameInput.focus(); return; }
       const classes = readSavedClasses();
       classes[data.className] = data;
       writeSavedClasses(classes);
@@ -853,20 +543,15 @@
           await cloudRequest({ action: "save", payload: JSON.stringify(data) });
           await syncFromCloud(data.className);
           setStatus("Googleスプレッドシートへ保存しました。");
-        } catch (error) {
-          setStatus(error.message);
-        }
+        } catch (error) { setStatus(error.message); }
       } else {
         setStatus("この端末に保存しました。共有する場合はApps Script URLを設定してください。");
       }
     }
-
     function loadSelectedClass() {
-      const classes = readSavedClasses();
-      const data = classes[savedClassSelect.value];
+      const data = readSavedClasses()[savedClassSelect.value];
       if (data) applyClassData(data);
     }
-
     async function deleteSelectedClass() {
       const name = savedClassSelect.value;
       if (!name) return;
@@ -880,44 +565,21 @@
           await cloudRequest({ action: "delete", className: name });
           await syncFromCloud();
           setStatus("Googleスプレッドシートから削除しました。");
-        } catch (error) {
-          setStatus(error.message);
-        }
+        } catch (error) { setStatus(error.message); }
       }
     }
-
     function clearClassForm() {
       classNameInput.value = "";
       titleInput.value = "";
+      highestScoreInput.value = "";
       setAverageItems([{ label: "クラス平均", value: "" }]);
       setDistributionItems([{ label: "クラス度数分布", scores: "" }]);
       render();
     }
 
-    function parseScores(value) {
-      return value
-        .split(/[\s,、]+/)
-        .map((score) => Number(score.trim()))
-        .filter((score) => Number.isFinite(score) && score >= 0 && score <= 100);
-    }
-
-    function formatNumber(value) {
-      if (!Number.isFinite(value)) return "0";
-      return Number.isInteger(value) ? String(value) : value.toFixed(1);
-    }
-
-    function niceGraphMax(value) {
-      if (value <= 5) return 5;
-      if (value <= 10) return 10;
-      if (value <= 20) return 20;
-      return Math.ceil(value / 10) * 10;
-    }
-
     function buildDistribution(scores) {
       const ranges = [{ label: "100", min: 100, max: 100 }];
-      for (let high = 99; high >= 19; high -= 10) {
-        ranges.push({ label: `${high - 9}〜${high}`, min: high - 9, max: high });
-      }
+      for (let high = 99; high >= 19; high -= 10) ranges.push({ label: `${high - 9}〜${high}`, min: high - 9, max: high });
       ranges.push({ label: "0〜9", min: 0, max: 9 });
       const rows = ranges.map((range) => ({
         label: range.label,
@@ -926,39 +588,31 @@
         count: scores.filter((score) => score >= range.min && score <= range.max).length
       }));
       const maxCount = niceGraphMax(Math.max(1, ...rows.map((row) => row.count)));
-      return rows.map((row) => ({
-        ...row,
-        width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%`
-      }));
+      return rows.map((row) => ({ ...row, width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%` }));
     }
-
-    function firstDistributionScores() {
-      return parseScores(getDistributionItems()[0]?.scores || "");
-    }
-
+    function firstDistributionScores() { return parseScores(getDistributionItems()[0]?.scores || ""); }
     function getHighlightAverage() {
       const averages = getAverageItems();
       return averages.find((item) => item.label.includes("クラス")) || averages[0] || null;
     }
-
     function getStats() {
       const scores = firstDistributionScores();
       const distribution = buildDistribution(scores);
-      const max = scores.length ? Math.max(...scores) : 0;
+      const calculatedMax = scores.length ? Math.max(...scores) : 0;
+      const enteredMax = Number(highestScoreInput.value);
+      const max = Number.isFinite(enteredMax) ? enteredMax : calculatedMax;
       const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
       const mode = distribution.reduce((best, row) => row.count > best.count ? row : best, distribution[0]);
       return { scores, distribution, max, average, mode };
     }
-
     function createStatCard(label, value, options = {}) {
       const card = document.createElement("div");
       card.className = "big-stat";
-      if (options.step !== false) card.dataset.step = "";
+      card.dataset.step = "";
       if (options.averageTrigger) card.dataset.averageTrigger = "true";
       card.innerHTML = `<span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong>`;
       return card;
     }
-
     function render() {
       const stats = getStats();
       const averages = getAverageItems();
@@ -974,8 +628,9 @@
       mainStats.innerHTML = "";
       mainStats.appendChild(createStatCard("最高点", formatNumber(stats.max)));
       averages.forEach((item) => {
-        const isTrigger = highlightAverage && item === highlightAverage;
-        mainStats.appendChild(createStatCard(item.label || "平均", formatNumber(Number(item.value)), { averageTrigger: isTrigger }));
+        mainStats.appendChild(createStatCard(item.label || "平均", formatNumber(Number(item.value)), {
+          averageTrigger: highlightAverage && item === highlightAverage
+        }));
       });
 
       distributionEl.innerHTML = "";
@@ -989,16 +644,10 @@
         buildDistribution(parseScores(source.scores)).forEach((row) => {
           const item = document.createElement("div");
           item.className = "dist-row";
-          if (Number.isFinite(highlightValue) && highlightValue >= row.min && highlightValue <= row.max) {
-            item.classList.add("is-average-band");
-          }
+          if (Number.isFinite(highlightValue) && highlightValue >= row.min && highlightValue <= row.max) item.classList.add("is-average-band");
           item.dataset.step = "";
           item.style.setProperty("--w", row.width);
-          item.innerHTML = `
-            <span class="range">${row.label}</span>
-            <span class="count">${row.count}</span>
-            <span class="bar-track"><span class="bar-fill"></span></span>
-          `;
+          item.innerHTML = `<span class="range">${row.label}</span><span class="count">${row.count}</span><span class="bar-track"><span class="bar-fill"></span></span>`;
           block.appendChild(item);
         });
         distributionEl.appendChild(block);
@@ -1010,23 +659,17 @@
       distributionEl.appendChild(graphMarker);
       resetReveal();
     }
-
-    function revealItems() {
-      return [...document.querySelectorAll("[data-step]")];
-    }
-
+    function revealItems() { return [...document.querySelectorAll("[data-step]")]; }
     function updateProgress() {
       progressEl.textContent = `${revealIndex} / ${revealItems().length}`;
       document.querySelector("#nextBtn").textContent = revealIndex >= revealItems().length ? "発表済み" : "次を発表";
     }
-
     function resetReveal() {
       revealIndex = 0;
       boardEl.classList.remove("graph-visible", "average-visible");
       revealItems().forEach((item) => item.classList.remove("is-visible"));
       updateProgress();
     }
-
     function revealNext() {
       const items = revealItems();
       if (revealIndex >= items.length) return;
@@ -1037,7 +680,6 @@
       revealIndex += 1;
       updateProgress();
     }
-
     function openPresentation() {
       render();
       setupScreen.hidden = true;
@@ -1046,70 +688,43 @@
     }
 
     document.querySelector("#startBtn").addEventListener("click", openPresentation);
-    document.querySelector("#backBtn").addEventListener("click", () => {
-      presentScreen.hidden = true;
-      setupScreen.hidden = false;
-      render();
-    });
+    document.querySelector("#backBtn").addEventListener("click", () => { presentScreen.hidden = true; setupScreen.hidden = false; render(); });
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
     document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
-    document.querySelector("#addAverageBtn").addEventListener("click", () => {
-      averagesList.appendChild(averageItem("平均", ""));
-      render();
-    });
-    document.querySelector("#addDistributionBtn").addEventListener("click", () => {
-      distributionsList.appendChild(distributionItem("度数分布", ""));
-      render();
-    });
+    document.querySelector("#addAverageBtn").addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
+    document.querySelector("#addDistributionBtn").addEventListener("click", () => { distributionsList.appendChild(distributionItem("度数分布", "")); render(); });
     document.querySelector("#saveClassBtn").addEventListener("click", saveCurrentClass);
     document.querySelector("#loadClassBtn").addEventListener("click", loadSelectedClass);
     document.querySelector("#newClassBtn").addEventListener("click", clearClassForm);
     document.querySelector("#deleteClassBtn").addEventListener("click", deleteSelectedClass);
     document.querySelector("#saveScriptUrlBtn").addEventListener("click", saveScriptUrl);
     document.querySelector("#syncCloudBtn").addEventListener("click", async () => {
-      try {
-        saveScriptUrl();
-        setStatus("Googleスプレッドシートから同期中...");
-        await syncFromCloud();
-        setStatus("Googleスプレッドシートから同期しました。");
-      } catch (error) {
-        setStatus(error.message);
-      }
+      try { saveScriptUrl(); setStatus("Googleスプレッドシートから同期中..."); await syncFromCloud(); setStatus("Googleスプレッドシートから同期しました。"); }
+      catch (error) { setStatus(error.message); }
     });
     savedClassSelect.addEventListener("change", loadSelectedClass);
     document.querySelector("#sampleBtn").addEventListener("click", () => {
       applyClassData({
         className: "1年A組",
         title: "1学期中間考査",
-        averages: [
-          { label: "クラス平均", value: "68.4" },
-          { label: "コース平均", value: "65.8" }
-        ],
+        highestScore: "98",
+        averages: [{ label: "クラス平均", value: "68.4" }, { label: "コース平均", value: "65.8" }],
         distributions: [{ label: "クラス度数分布", scores: sampleScores }]
       });
     });
-
-    [classNameInput, titleInput].forEach((field) => field.addEventListener("input", render));
+    [classNameInput, titleInput, highestScoreInput].forEach((field) => field.addEventListener("input", render));
     window.addEventListener("keydown", (event) => {
       if (presentScreen.hidden) return;
-      if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") {
-        event.preventDefault();
-        revealNext();
-      }
-      if (event.key === "Escape") {
-        presentScreen.hidden = true;
-        setupScreen.hidden = false;
-      }
+      if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") { event.preventDefault(); revealNext(); }
+      if (event.key === "Escape") { presentScreen.hidden = true; setupScreen.hidden = false; }
     });
 
     scriptUrlInput.value = localStorage.getItem(scriptUrlKey) || "";
     applyClassData({
       className: "1年A組",
       title: "1学期中間考査",
-      averages: [
-        { label: "クラス平均", value: "68.4" },
-        { label: "コース平均", value: "65.8" }
-      ],
+      highestScore: "98",
+      averages: [{ label: "クラス平均", value: "68.4" }, { label: "コース平均", value: "65.8" }],
       distributions: [{ label: "クラス度数分布", scores: sampleScores }]
     });
     renderSavedClassOptions();
