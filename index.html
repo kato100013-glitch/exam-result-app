@@ -10,9 +10,7 @@
       --ink: #11140f;
       --muted: #6d746c;
       --line: #dcdfd8;
-      --panel: #ffffff;
       --dark: #10120f;
-      --dark-2: #181b16;
       --lime: #d7f36b;
       --lime-2: #a8c84b;
       --red: #ff5a52;
@@ -70,12 +68,12 @@
     .setup-panel {
       width: min(980px, 100%);
       display: grid;
-      gap: 22px;
-      background: rgba(255, 255, 255, .94);
+      gap: 18px;
+      background: rgba(255, 255, 255, .95);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
-      padding: clamp(20px, 4vw, 44px);
+      padding: clamp(20px, 4vw, 42px);
     }
 
     .setup-head {
@@ -84,7 +82,7 @@
       justify-content: space-between;
       gap: 18px;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 18px;
+      padding-bottom: 16px;
     }
 
     h1,
@@ -105,15 +103,17 @@
       font-weight: 700;
     }
 
-    .form-grid {
+    .form-grid,
+    .class-tools,
+    .cloud-tools {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
 
     .field {
       display: grid;
-      gap: 8px;
+      gap: 7px;
     }
 
     .field.wide {
@@ -139,13 +139,13 @@
 
     input,
     select {
-      min-height: 46px;
-      padding: 0 13px;
+      min-height: 44px;
+      padding: 0 12px;
     }
 
     textarea {
-      min-height: 180px;
-      padding: 13px;
+      min-height: 150px;
+      padding: 12px;
       resize: vertical;
       line-height: 1.7;
     }
@@ -155,12 +155,6 @@
     textarea:focus {
       border-color: var(--lime-2);
       box-shadow: 0 0 0 3px rgba(168, 200, 75, .2);
-    }
-
-    .class-tools {
-      display: grid;
-      grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr);
-      gap: 12px;
     }
 
     .setup-actions {
@@ -173,9 +167,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 44px;
+      min-height: 42px;
       border-radius: 8px;
-      padding: 0 18px;
+      padding: 0 16px;
       background: var(--lime-2);
       color: #fff;
       font-weight: 900;
@@ -194,6 +188,13 @@
     .btn.accent {
       background: var(--lime);
       color: var(--ink);
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .preview {
@@ -271,8 +272,6 @@
       border-radius: 8px;
       background: #f8faf4;
       padding: clamp(10px, 1.3vw, 16px);
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .big-stat span {
@@ -286,7 +285,6 @@
       align-self: center;
       font-size: clamp(42px, 5.2vw, 76px);
       line-height: .82;
-      letter-spacing: 0;
       opacity: 0;
       transform: translateY(8px);
       transition: opacity .24s ease, transform .24s ease;
@@ -313,7 +311,6 @@
       display: grid;
       align-content: start;
       gap: clamp(4px, .7vw, 9px);
-      max-width: 1120px;
       width: min(1120px, 100%);
     }
 
@@ -325,8 +322,6 @@
       min-height: clamp(27px, 3.3vh, 36px);
       border-radius: 8px;
       padding: 3px 8px;
-      opacity: 1;
-      transform: translateY(0);
       transition: background .24s ease, box-shadow .24s ease;
     }
 
@@ -341,10 +336,6 @@
       font-weight: 900;
       line-height: 1;
       white-space: nowrap;
-    }
-
-    .range {
-      color: var(--ink);
     }
 
     .count {
@@ -423,6 +414,7 @@
 
       .form-grid,
       .class-tools,
+      .cloud-tools,
       .preview {
         grid-template-columns: 1fr;
       }
@@ -444,10 +436,6 @@
         padding: 10px;
       }
 
-      .board {
-        min-height: 0;
-      }
-
       .dist-row {
         grid-template-columns: 82px 42px 1fr;
       }
@@ -466,6 +454,19 @@
           <button class="btn accent" id="startBtn" type="button">発表画面へ</button>
         </div>
 
+        <div class="cloud-tools">
+          <div class="field wide">
+            <label for="scriptUrl">Google Apps Script URL</label>
+            <input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+          </div>
+        </div>
+
+        <div class="setup-actions">
+          <button class="btn secondary" id="saveScriptUrlBtn" type="button">URLを保存</button>
+          <button class="btn secondary" id="syncCloudBtn" type="button">シートから同期</button>
+        </div>
+        <p class="status" id="statusText"></p>
+
         <div class="class-tools">
           <div class="field">
             <label for="className">クラス名</label>
@@ -480,7 +481,7 @@
         <div class="form-grid">
           <div class="field wide">
             <label for="examTitle">タイトル</label>
-            <input id="examTitle" value="1学期期末考査 数学I">
+            <input id="examTitle" value="1学期中間考査">
           </div>
           <div class="field">
             <label for="classAverage">クラス平均</label>
@@ -527,7 +528,7 @@
 
     <section class="screen present" id="presentScreen" hidden>
       <div class="board" id="board">
-        <h2 class="board-title" id="boardTitle">1学期期末考査 数学I</h2>
+        <h2 class="board-title" id="boardTitle">1学期中間考査</h2>
         <div class="main-stats">
           <div class="big-stat" data-step>
             <span>最高点</span>
@@ -558,6 +559,7 @@
     const presentScreen = document.querySelector("#presentScreen");
     const classNameInput = document.querySelector("#className");
     const savedClassSelect = document.querySelector("#savedClass");
+    const scriptUrlInput = document.querySelector("#scriptUrl");
     const titleInput = document.querySelector("#examTitle");
     const classAverageInput = document.querySelector("#classAverage");
     const courseAverageInput = document.querySelector("#courseAverage");
@@ -565,9 +567,15 @@
     const boardEl = document.querySelector("#board");
     const distributionEl = document.querySelector("#distribution");
     const progressEl = document.querySelector("#progress");
+    const statusText = document.querySelector("#statusText");
     const storageKey = "exam-result-app.classes";
+    const scriptUrlKey = "exam-result-app.scriptUrl";
     const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
     let revealIndex = 0;
+
+    function setStatus(message) {
+      statusText.textContent = message;
+    }
 
     function readSavedClasses() {
       try {
@@ -624,7 +632,59 @@
       }
     }
 
-    function saveCurrentClass() {
+    function saveScriptUrl() {
+      localStorage.setItem(scriptUrlKey, scriptUrlInput.value.trim());
+      setStatus("Apps Script URLを保存しました。");
+    }
+
+    function cloudRequest(params) {
+      const baseUrl = scriptUrlInput.value.trim();
+      if (!baseUrl) {
+        throw new Error("Google Apps Script URLを入力してください。");
+      }
+      return new Promise((resolve, reject) => {
+        const callbackName = `examResultCallback_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+        const url = new URL(baseUrl);
+        Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+        url.searchParams.set("callback", callbackName);
+
+        const script = document.createElement("script");
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("Googleスプレッドシートとの通信がタイムアウトしました。"));
+        }, 12000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        window[callbackName] = (result) => {
+          cleanup();
+          if (result && result.ok) {
+            resolve(result);
+          } else {
+            reject(new Error(result?.error || "Googleスプレッドシートの処理に失敗しました。"));
+          }
+        };
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Apps Script URLに接続できません。"));
+        };
+        script.src = url.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    async function syncFromCloud(selectedName) {
+      const result = await cloudRequest({ action: "list" });
+      writeSavedClasses(result.classes || {});
+      renderSavedClassOptions(selectedName);
+      return result.classes || {};
+    }
+
+    async function saveCurrentClass() {
       const data = currentClassData();
       if (!data.className) {
         alert("クラス名を入力してください。");
@@ -635,6 +695,19 @@
       classes[data.className] = data;
       writeSavedClasses(classes);
       renderSavedClassOptions(data.className);
+
+      if (scriptUrlInput.value.trim()) {
+        try {
+          setStatus("Googleスプレッドシートへ保存中...");
+          await cloudRequest({ action: "save", payload: JSON.stringify(data) });
+          await syncFromCloud(data.className);
+          setStatus("Googleスプレッドシートへ保存しました。");
+        } catch (error) {
+          setStatus(error.message);
+        }
+      } else {
+        setStatus("この端末に保存しました。共有する場合はApps Script URLを設定してください。");
+      }
     }
 
     function loadSelectedClass() {
@@ -643,13 +716,23 @@
       if (data) applyClassData(data);
     }
 
-    function deleteSelectedClass() {
+    async function deleteSelectedClass() {
       const name = savedClassSelect.value;
       if (!name) return;
       const classes = readSavedClasses();
       delete classes[name];
       writeSavedClasses(classes);
       renderSavedClassOptions();
+      if (scriptUrlInput.value.trim()) {
+        try {
+          setStatus("Googleスプレッドシートから削除中...");
+          await cloudRequest({ action: "delete", className: name });
+          await syncFromCloud();
+          setStatus("Googleスプレッドシートから削除しました。");
+        } catch (error) {
+          setStatus(error.message);
+        }
+      }
     }
 
     function clearClassForm() {
@@ -796,11 +879,22 @@
     document.querySelector("#loadClassBtn").addEventListener("click", loadSelectedClass);
     document.querySelector("#newClassBtn").addEventListener("click", clearClassForm);
     document.querySelector("#deleteClassBtn").addEventListener("click", deleteSelectedClass);
+    document.querySelector("#saveScriptUrlBtn").addEventListener("click", saveScriptUrl);
+    document.querySelector("#syncCloudBtn").addEventListener("click", async () => {
+      try {
+        saveScriptUrl();
+        setStatus("Googleスプレッドシートから同期中...");
+        await syncFromCloud();
+        setStatus("Googleスプレッドシートから同期しました。");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    });
     savedClassSelect.addEventListener("change", loadSelectedClass);
     document.querySelector("#sampleBtn").addEventListener("click", () => {
       scoresInput.value = sampleScores;
       classNameInput.value = "1年A組";
-      titleInput.value = "1学期期末考査 数学I";
+      titleInput.value = "1学期中間考査";
       classAverageInput.value = "68.4";
       courseAverageInput.value = "65.8";
       render();
@@ -822,8 +916,12 @@
       }
     });
 
+    scriptUrlInput.value = localStorage.getItem(scriptUrlKey) || "";
     renderSavedClassOptions();
     render();
+    if (scriptUrlInput.value) {
+      syncFromCloud().catch(() => {});
+    }
   </script>
 </body>
 </html>
