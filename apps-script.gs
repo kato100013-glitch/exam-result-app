@@ -26,7 +26,7 @@ function getSheet() {
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME);
-    sheet.appendRow(["className", "title", "classAverage", "courseAverage", "scores", "updatedAt"]);
+    sheet.appendRow(["className", "title", "classAverage", "courseAverage", "scores", "averages", "distributions", "updatedAt"]);
   }
   return sheet;
 }
@@ -35,14 +35,23 @@ function listClasses(sheet) {
   const values = sheet.getDataRange().getValues();
   const classes = {};
   for (let row = 1; row < values.length; row += 1) {
-    const [className, title, classAverage, courseAverage, scores] = values[row];
+    const [className, title, classAverage, courseAverage, scores, averagesJson, distributionsJson] = values[row];
     if (!className) continue;
+    const averages = parseJsonArray(averagesJson) || [
+      { label: "クラス平均", value: String(classAverage || "") },
+      { label: "コース平均", value: String(courseAverage || "") }
+    ];
+    const distributions = parseJsonArray(distributionsJson) || [
+      { label: "クラス度数分布", scores: String(scores || "") }
+    ];
     classes[className] = {
       className: String(className),
       title: String(title || ""),
       classAverage: String(classAverage || ""),
       courseAverage: String(courseAverage || ""),
-      scores: String(scores || "")
+      scores: String(scores || ""),
+      averages,
+      distributions
     };
   }
   return classes;
@@ -60,6 +69,8 @@ function saveClass(sheet, data) {
       data.classAverage || "",
       data.courseAverage || "",
       data.scores || "",
+      JSON.stringify(data.averages || []),
+      JSON.stringify(data.distributions || []),
       new Date()
     ];
     if (row) {
@@ -69,6 +80,16 @@ function saveClass(sheet, data) {
     }
   } finally {
     lock.releaseLock();
+  }
+}
+
+function parseJsonArray(value) {
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(String(value));
+    return Array.isArray(parsed) ? parsed : null;
+  } catch (error) {
+    return null;
   }
 }
 

@@ -66,7 +66,7 @@
     }
 
     .setup-panel {
-      width: min(980px, 100%);
+      width: min(1040px, 100%);
       display: grid;
       gap: 18px;
       background: rgba(255, 255, 255, .95);
@@ -144,7 +144,7 @@
     }
 
     textarea {
-      min-height: 150px;
+      min-height: 118px;
       padding: 12px;
       resize: vertical;
       line-height: 1.7;
@@ -155,6 +155,49 @@
     textarea:focus {
       border-color: var(--lime-2);
       box-shadow: 0 0 0 3px rgba(168, 200, 75, .2);
+    }
+
+    .editor-section {
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcf9;
+      padding: 14px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-head h2 {
+      font-size: 16px;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .average-item {
+      display: grid;
+      grid-template-columns: minmax(130px, 1fr) minmax(92px, 160px) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .distribution-item {
+      display: grid;
+      grid-template-columns: minmax(150px, 240px) 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .distribution-item textarea {
+      min-height: 84px;
     }
 
     .setup-actions {
@@ -180,7 +223,8 @@
       transform: translateY(-1px);
     }
 
-    .btn.secondary {
+    .btn.secondary,
+    .btn.remove {
       background: #e9ede5;
       color: var(--ink);
     }
@@ -188,6 +232,11 @@
     .btn.accent {
       background: var(--lime);
       color: var(--ink);
+    }
+
+    .btn.remove {
+      min-width: 64px;
+      padding: 0 12px;
     }
 
     .status {
@@ -237,33 +286,33 @@
     .board {
       display: grid;
       grid-template-rows: auto auto 1fr;
-      gap: clamp(12px, 1.8vw, 22px);
+      gap: clamp(10px, 1.4vw, 18px);
       min-height: 0;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #ffffff;
       box-shadow: 0 24px 70px rgba(17, 20, 15, .12);
-      padding: clamp(18px, 2.8vw, 34px);
+      padding: clamp(16px, 2.4vw, 30px);
       color: var(--ink);
     }
 
     .board-title {
       max-width: 980px;
-      font-size: clamp(28px, 3.2vw, 48px);
+      font-size: clamp(26px, 3vw, 46px);
       line-height: 1.02;
       letter-spacing: 0;
     }
 
     .main-stats {
       display: grid;
-      grid-template-columns: repeat(3, minmax(150px, 1fr));
-      gap: clamp(10px, 1.4vw, 18px);
-      width: min(900px, 100%);
+      grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+      gap: clamp(8px, 1.2vw, 14px);
+      width: min(980px, 100%);
     }
 
     .big-stat {
-      height: clamp(112px, 16vh, 150px);
+      height: clamp(92px, 13vh, 132px);
       display: grid;
       grid-template-rows: auto 1fr;
       align-items: center;
@@ -271,19 +320,19 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #f8faf4;
-      padding: clamp(10px, 1.3vw, 16px);
+      padding: clamp(9px, 1.1vw, 14px);
     }
 
     .big-stat span {
       color: var(--muted);
-      font-size: clamp(11px, 1.15vw, 15px);
+      font-size: clamp(11px, 1vw, 14px);
       font-weight: 900;
     }
 
     .big-stat strong {
       display: block;
       align-self: center;
-      font-size: clamp(42px, 5.2vw, 76px);
+      font-size: clamp(34px, 4.4vw, 68px);
       line-height: .82;
       opacity: 0;
       transform: translateY(8px);
@@ -310,18 +359,30 @@
     .distribution {
       display: grid;
       align-content: start;
-      gap: clamp(4px, .7vw, 9px);
+      gap: clamp(5px, .7vw, 10px);
       width: min(1120px, 100%);
+      overflow: hidden;
+    }
+
+    .distribution-block {
+      display: grid;
+      gap: 3px;
+    }
+
+    .distribution-title {
+      color: var(--muted);
+      font-size: clamp(12px, 1.1vw, 15px);
+      font-weight: 900;
     }
 
     .dist-row {
       display: grid;
-      grid-template-columns: minmax(72px, 116px) minmax(42px, 64px) minmax(120px, 1fr);
+      grid-template-columns: minmax(72px, 112px) minmax(38px, 58px) minmax(110px, 1fr);
       align-items: center;
       gap: clamp(8px, 1.4vw, 16px);
-      min-height: clamp(27px, 3.3vh, 36px);
+      min-height: clamp(22px, 2.65vh, 31px);
       border-radius: 8px;
-      padding: 3px 8px;
+      padding: 2px 8px;
       transition: background .24s ease, box-shadow .24s ease;
     }
 
@@ -332,7 +393,7 @@
 
     .range,
     .count {
-      font-size: clamp(18px, 1.65vw, 26px);
+      font-size: clamp(15px, 1.45vw, 22px);
       font-weight: 900;
       line-height: 1;
       white-space: nowrap;
@@ -357,7 +418,7 @@
     }
 
     .bar-track {
-      height: clamp(16px, 1.35vw, 22px);
+      height: clamp(13px, 1.15vw, 19px);
       overflow: hidden;
       border-radius: 999px;
       background: #edf0e8;
@@ -415,21 +476,23 @@
       .form-grid,
       .class-tools,
       .cloud-tools,
-      .preview {
+      .preview,
+      .average-item,
+      .distribution-item {
         grid-template-columns: 1fr;
       }
 
       .main-stats {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
       }
 
       .big-stat {
-        height: clamp(92px, 14vh, 118px);
+        height: clamp(82px, 12vh, 108px);
         padding: 7px;
       }
 
       .big-stat strong {
-        font-size: clamp(36px, 8vw, 58px);
+        font-size: clamp(30px, 7vw, 50px);
       }
 
       .present {
@@ -437,7 +500,7 @@
       }
 
       .dist-row {
-        grid-template-columns: 82px 42px 1fr;
+        grid-template-columns: 78px 38px 1fr;
       }
     }
   </style>
@@ -469,11 +532,11 @@
 
         <div class="class-tools">
           <div class="field">
-            <label for="className">クラス名</label>
+            <label for="className">保存名</label>
             <input id="className" value="1年A組">
           </div>
           <div class="field">
-            <label for="savedClass">保存済みクラス</label>
+            <label for="savedClass">保存済みデータ</label>
             <select id="savedClass"></select>
           </div>
         </div>
@@ -483,22 +546,26 @@
             <label for="examTitle">タイトル</label>
             <input id="examTitle" value="1学期中間考査">
           </div>
-          <div class="field">
-            <label for="classAverage">クラス平均</label>
-            <input id="classAverage" type="number" min="0" max="100" step="0.1" value="68.4">
-          </div>
-          <div class="field">
-            <label for="courseAverage">コース平均</label>
-            <input id="courseAverage" type="number" min="0" max="100" step="0.1" value="65.8">
-          </div>
-          <div class="field wide">
-            <label for="scores">点数</label>
-            <textarea id="scores">98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21</textarea>
-          </div>
         </div>
 
+        <section class="editor-section">
+          <div class="section-head">
+            <h2>平均項目</h2>
+            <button class="btn secondary" id="addAverageBtn" type="button">平均を追加</button>
+          </div>
+          <div class="item-list" id="averagesList"></div>
+        </section>
+
+        <section class="editor-section">
+          <div class="section-head">
+            <h2>度数分布</h2>
+            <button class="btn secondary" id="addDistributionBtn" type="button">分布を追加</button>
+          </div>
+          <div class="item-list" id="distributionsList"></div>
+        </section>
+
         <div class="setup-actions">
-          <button class="btn" id="saveClassBtn" type="button">このクラスを保存</button>
+          <button class="btn" id="saveClassBtn" type="button">このデータを保存</button>
           <button class="btn secondary" id="loadClassBtn" type="button">読み込む</button>
           <button class="btn secondary" id="newClassBtn" type="button">新規</button>
           <button class="btn secondary" id="deleteClassBtn" type="button">削除</button>
@@ -529,20 +596,7 @@
     <section class="screen present" id="presentScreen" hidden>
       <div class="board" id="board">
         <h2 class="board-title" id="boardTitle">1学期中間考査</h2>
-        <div class="main-stats">
-          <div class="big-stat" data-step>
-            <span>最高点</span>
-            <strong id="boardMax">0</strong>
-          </div>
-          <div class="big-stat" data-step>
-            <span>クラス平均</span>
-            <strong id="boardClassAverage">0</strong>
-          </div>
-          <div class="big-stat" data-step>
-            <span>コース平均</span>
-            <strong id="boardCourseAverage">0</strong>
-          </div>
-        </div>
+        <div class="main-stats" id="mainStats"></div>
         <div class="distribution" id="distribution"></div>
       </div>
       <div class="present-actions">
@@ -561,9 +615,9 @@
     const savedClassSelect = document.querySelector("#savedClass");
     const scriptUrlInput = document.querySelector("#scriptUrl");
     const titleInput = document.querySelector("#examTitle");
-    const classAverageInput = document.querySelector("#classAverage");
-    const courseAverageInput = document.querySelector("#courseAverage");
-    const scoresInput = document.querySelector("#scores");
+    const averagesList = document.querySelector("#averagesList");
+    const distributionsList = document.querySelector("#distributionsList");
+    const mainStats = document.querySelector("#mainStats");
     const boardEl = document.querySelector("#board");
     const distributionEl = document.querySelector("#distribution");
     const progressEl = document.querySelector("#progress");
@@ -571,6 +625,7 @@
     const storageKey = "exam-result-app.classes";
     const scriptUrlKey = "exam-result-app.scriptUrl";
     const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
+    const colorClasses = ["is-red", "is-amber", "is-cyan"];
     let revealIndex = 0;
 
     function setStatus(message) {
@@ -589,22 +644,129 @@
       localStorage.setItem(storageKey, JSON.stringify(classes));
     }
 
+    function normalizeData(data = {}) {
+      const averages = Array.isArray(data.averages)
+        ? data.averages
+        : [
+            { label: "クラス平均", value: data.classAverage || "68.4" },
+            { label: "コース平均", value: data.courseAverage || "65.8" }
+          ];
+      const distributions = Array.isArray(data.distributions)
+        ? data.distributions
+        : [{ label: "クラス度数分布", scores: data.scores || sampleScores }];
+      return {
+        className: data.className || "1年A組",
+        title: data.title || "1学期中間考査",
+        averages: averages.filter((item) => item && item.label !== ""),
+        distributions: distributions.filter((item) => item && item.label !== "")
+      };
+    }
+
+    function averageItem(label = "", value = "") {
+      const item = document.createElement("div");
+      item.className = "average-item";
+      item.innerHTML = `
+        <div class="field">
+          <label>項目名</label>
+          <input class="average-label" value="${escapeAttribute(label)}">
+        </div>
+        <div class="field">
+          <label>値</label>
+          <input class="average-value" type="number" min="0" max="100" step="0.1" value="${escapeAttribute(value)}">
+        </div>
+        <button class="btn remove" type="button">削除</button>
+      `;
+      item.querySelector(".remove").addEventListener("click", () => {
+        item.remove();
+        render();
+      });
+      item.querySelectorAll("input").forEach((input) => input.addEventListener("input", render));
+      return item;
+    }
+
+    function distributionItem(label = "", scores = "") {
+      const item = document.createElement("div");
+      item.className = "distribution-item";
+      item.innerHTML = `
+        <div class="field">
+          <label>分布名</label>
+          <input class="distribution-label" value="${escapeAttribute(label)}">
+        </div>
+        <div class="field">
+          <label>点数</label>
+          <textarea class="distribution-scores">${escapeHtml(scores)}</textarea>
+        </div>
+        <button class="btn remove" type="button">削除</button>
+      `;
+      item.querySelector(".remove").addEventListener("click", () => {
+        item.remove();
+        render();
+      });
+      item.querySelectorAll("input, textarea").forEach((input) => input.addEventListener("input", render));
+      return item;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/"/g, "&quot;");
+    }
+
+    function setAverageItems(items) {
+      averagesList.innerHTML = "";
+      items.forEach((item) => averagesList.appendChild(averageItem(item.label, item.value)));
+    }
+
+    function setDistributionItems(items) {
+      distributionsList.innerHTML = "";
+      items.forEach((item) => distributionsList.appendChild(distributionItem(item.label, item.scores)));
+    }
+
+    function getAverageItems() {
+      return [...averagesList.querySelectorAll(".average-item")]
+        .map((item) => ({
+          label: item.querySelector(".average-label").value.trim(),
+          value: item.querySelector(".average-value").value
+        }))
+        .filter((item) => item.label || item.value);
+    }
+
+    function getDistributionItems() {
+      return [...distributionsList.querySelectorAll(".distribution-item")]
+        .map((item) => ({
+          label: item.querySelector(".distribution-label").value.trim(),
+          scores: item.querySelector(".distribution-scores").value
+        }))
+        .filter((item) => item.label || item.scores);
+    }
+
     function currentClassData() {
+      const averages = getAverageItems();
+      const distributions = getDistributionItems();
+      const classAverage = averages.find((item) => item.label.includes("クラス"))?.value || averages[0]?.value || "";
+      const courseAverage = averages.find((item) => item.label.includes("コース"))?.value || averages[1]?.value || "";
       return {
         className: classNameInput.value.trim(),
         title: titleInput.value,
-        classAverage: classAverageInput.value,
-        courseAverage: courseAverageInput.value,
-        scores: scoresInput.value
+        averages,
+        distributions,
+        classAverage,
+        courseAverage,
+        scores: distributions[0]?.scores || ""
       };
     }
 
     function applyClassData(data) {
-      classNameInput.value = data.className || "";
-      titleInput.value = data.title || "";
-      classAverageInput.value = data.classAverage || "";
-      courseAverageInput.value = data.courseAverage || "";
-      scoresInput.value = data.scores || "";
+      const normalized = normalizeData(data);
+      classNameInput.value = normalized.className;
+      titleInput.value = normalized.title;
+      setAverageItems(normalized.averages.length ? normalized.averages : [{ label: "クラス平均", value: "" }]);
+      setDistributionItems(normalized.distributions.length ? normalized.distributions : [{ label: "クラス度数分布", scores: "" }]);
       render();
     }
 
@@ -627,9 +789,7 @@
         option.textContent = name;
         savedClassSelect.appendChild(option);
       });
-      if (selectedName && classes[selectedName]) {
-        savedClassSelect.value = selectedName;
-      }
+      if (selectedName && classes[selectedName]) savedClassSelect.value = selectedName;
     }
 
     function saveScriptUrl() {
@@ -639,34 +799,26 @@
 
     function cloudRequest(params) {
       const baseUrl = scriptUrlInput.value.trim();
-      if (!baseUrl) {
-        throw new Error("Google Apps Script URLを入力してください。");
-      }
+      if (!baseUrl) throw new Error("Google Apps Script URLを入力してください。");
       return new Promise((resolve, reject) => {
         const callbackName = `examResultCallback_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         const url = new URL(baseUrl);
         Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
         url.searchParams.set("callback", callbackName);
-
         const script = document.createElement("script");
         const timer = setTimeout(() => {
           cleanup();
           reject(new Error("Googleスプレッドシートとの通信がタイムアウトしました。"));
         }, 12000);
-
         function cleanup() {
           clearTimeout(timer);
           delete window[callbackName];
           script.remove();
         }
-
         window[callbackName] = (result) => {
           cleanup();
-          if (result && result.ok) {
-            resolve(result);
-          } else {
-            reject(new Error(result?.error || "Googleスプレッドシートの処理に失敗しました。"));
-          }
+          if (result && result.ok) resolve(result);
+          else reject(new Error(result?.error || "Googleスプレッドシートの処理に失敗しました。"));
         };
         script.onerror = () => {
           cleanup();
@@ -687,7 +839,7 @@
     async function saveCurrentClass() {
       const data = currentClassData();
       if (!data.className) {
-        alert("クラス名を入力してください。");
+        alert("保存名を入力してください。");
         classNameInput.focus();
         return;
       }
@@ -695,7 +847,6 @@
       classes[data.className] = data;
       writeSavedClasses(classes);
       renderSavedClassOptions(data.className);
-
       if (scriptUrlInput.value.trim()) {
         try {
           setStatus("Googleスプレッドシートへ保存中...");
@@ -738,9 +889,8 @@
     function clearClassForm() {
       classNameInput.value = "";
       titleInput.value = "";
-      classAverageInput.value = "";
-      courseAverageInput.value = "";
-      scoresInput.value = "";
+      setAverageItems([{ label: "クラス平均", value: "" }]);
+      setDistributionItems([{ label: "クラス度数分布", scores: "" }]);
       render();
     }
 
@@ -769,7 +919,6 @@
         ranges.push({ label: `${high - 9}〜${high}`, min: high - 9, max: high });
       }
       ranges.push({ label: "0〜9", min: 0, max: 9 });
-
       const rows = ranges.map((range) => ({
         label: range.label,
         min: range.min,
@@ -783,8 +932,17 @@
       }));
     }
 
+    function firstDistributionScores() {
+      return parseScores(getDistributionItems()[0]?.scores || "");
+    }
+
+    function getHighlightAverage() {
+      const averages = getAverageItems();
+      return averages.find((item) => item.label.includes("クラス")) || averages[0] || null;
+    }
+
     function getStats() {
-      const scores = parseScores(scoresInput.value);
+      const scores = firstDistributionScores();
       const distribution = buildDistribution(scores);
       const max = scores.length ? Math.max(...scores) : 0;
       const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
@@ -792,33 +950,58 @@
       return { scores, distribution, max, average, mode };
     }
 
+    function createStatCard(label, value, options = {}) {
+      const card = document.createElement("div");
+      card.className = "big-stat";
+      if (options.step !== false) card.dataset.step = "";
+      if (options.averageTrigger) card.dataset.averageTrigger = "true";
+      card.innerHTML = `<span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong>`;
+      return card;
+    }
+
     function render() {
       const stats = getStats();
+      const averages = getAverageItems();
+      const distributions = getDistributionItems();
+      const highlightAverage = getHighlightAverage();
+      const highlightValue = Number(highlightAverage?.value);
       document.querySelector("#total").textContent = stats.scores.length;
       document.querySelector("#maxScore").textContent = formatNumber(stats.max);
       document.querySelector("#averageScore").textContent = formatNumber(stats.average);
       document.querySelector("#modeBand").textContent = stats.mode ? stats.mode.label : "-";
       document.querySelector("#boardTitle").textContent = titleInput.value || "定期考査 結果発表";
-      document.querySelector("#boardMax").textContent = formatNumber(stats.max);
-      document.querySelector("#boardClassAverage").textContent = formatNumber(Number(classAverageInput.value));
-      document.querySelector("#boardCourseAverage").textContent = formatNumber(Number(courseAverageInput.value));
+
+      mainStats.innerHTML = "";
+      mainStats.appendChild(createStatCard("最高点", formatNumber(stats.max)));
+      averages.forEach((item) => {
+        const isTrigger = highlightAverage && item === highlightAverage;
+        mainStats.appendChild(createStatCard(item.label || "平均", formatNumber(Number(item.value)), { averageTrigger: isTrigger }));
+      });
 
       distributionEl.innerHTML = "";
-      const classAverage = Number(classAverageInput.value);
-      stats.distribution.forEach((row) => {
-        const item = document.createElement("div");
-        item.className = "dist-row";
-        if (Number.isFinite(classAverage) && classAverage >= row.min && classAverage <= row.max) {
-          item.classList.add("is-average-band");
-        }
-        item.dataset.step = "";
-        item.style.setProperty("--w", row.width);
-        item.innerHTML = `
-          <span class="range">${row.label}</span>
-          <span class="count">${row.count}</span>
-          <span class="bar-track"><span class="bar-fill"></span></span>
-        `;
-        distributionEl.appendChild(item);
+      distributions.forEach((source) => {
+        const block = document.createElement("div");
+        block.className = "distribution-block";
+        const title = document.createElement("div");
+        title.className = "distribution-title";
+        title.textContent = source.label || "度数分布";
+        block.appendChild(title);
+        buildDistribution(parseScores(source.scores)).forEach((row) => {
+          const item = document.createElement("div");
+          item.className = "dist-row";
+          if (Number.isFinite(highlightValue) && highlightValue >= row.min && highlightValue <= row.max) {
+            item.classList.add("is-average-band");
+          }
+          item.dataset.step = "";
+          item.style.setProperty("--w", row.width);
+          item.innerHTML = `
+            <span class="range">${row.label}</span>
+            <span class="count">${row.count}</span>
+            <span class="bar-track"><span class="bar-fill"></span></span>
+          `;
+          block.appendChild(item);
+        });
+        distributionEl.appendChild(block);
       });
       const graphMarker = document.createElement("div");
       graphMarker.id = "graphMarker";
@@ -839,8 +1022,7 @@
 
     function resetReveal() {
       revealIndex = 0;
-      boardEl.classList.remove("graph-visible");
-      boardEl.classList.remove("average-visible");
+      boardEl.classList.remove("graph-visible", "average-visible");
       revealItems().forEach((item) => item.classList.remove("is-visible"));
       updateProgress();
     }
@@ -850,12 +1032,8 @@
       if (revealIndex >= items.length) return;
       const item = items[revealIndex];
       item.classList.add("is-visible");
-      if (item.querySelector("#boardClassAverage")) {
-        boardEl.classList.add("average-visible");
-      }
-      if (item.id === "graphMarker") {
-        boardEl.classList.add("graph-visible");
-      }
+      if (item.dataset.averageTrigger === "true") boardEl.classList.add("average-visible");
+      if (item.id === "graphMarker") boardEl.classList.add("graph-visible");
       revealIndex += 1;
       updateProgress();
     }
@@ -875,6 +1053,14 @@
     });
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
     document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
+    document.querySelector("#addAverageBtn").addEventListener("click", () => {
+      averagesList.appendChild(averageItem("平均", ""));
+      render();
+    });
+    document.querySelector("#addDistributionBtn").addEventListener("click", () => {
+      distributionsList.appendChild(distributionItem("度数分布", ""));
+      render();
+    });
     document.querySelector("#saveClassBtn").addEventListener("click", saveCurrentClass);
     document.querySelector("#loadClassBtn").addEventListener("click", loadSelectedClass);
     document.querySelector("#newClassBtn").addEventListener("click", clearClassForm);
@@ -892,18 +1078,18 @@
     });
     savedClassSelect.addEventListener("change", loadSelectedClass);
     document.querySelector("#sampleBtn").addEventListener("click", () => {
-      scoresInput.value = sampleScores;
-      classNameInput.value = "1年A組";
-      titleInput.value = "1学期中間考査";
-      classAverageInput.value = "68.4";
-      courseAverageInput.value = "65.8";
-      render();
+      applyClassData({
+        className: "1年A組",
+        title: "1学期中間考査",
+        averages: [
+          { label: "クラス平均", value: "68.4" },
+          { label: "コース平均", value: "65.8" }
+        ],
+        distributions: [{ label: "クラス度数分布", scores: sampleScores }]
+      });
     });
 
-    [classNameInput, titleInput, classAverageInput, courseAverageInput, scoresInput].forEach((field) => {
-      field.addEventListener("input", render);
-    });
-
+    [classNameInput, titleInput].forEach((field) => field.addEventListener("input", render));
     window.addEventListener("keydown", (event) => {
       if (presentScreen.hidden) return;
       if (event.key === " " || event.key === "Enter" || event.key === "ArrowRight") {
@@ -917,11 +1103,17 @@
     });
 
     scriptUrlInput.value = localStorage.getItem(scriptUrlKey) || "";
+    applyClassData({
+      className: "1年A組",
+      title: "1学期中間考査",
+      averages: [
+        { label: "クラス平均", value: "68.4" },
+        { label: "コース平均", value: "65.8" }
+      ],
+      distributions: [{ label: "クラス度数分布", scores: sampleScores }]
+    });
     renderSavedClassOptions();
-    render();
-    if (scriptUrlInput.value) {
-      syncFromCloud().catch(() => {});
-    }
+    if (scriptUrlInput.value) syncFromCloud().catch(() => {});
   </script>
 </body>
 </html>
