@@ -106,7 +106,7 @@
     }
     .distribution-item {
       display: grid;
-      grid-template-columns: minmax(130px, 190px) minmax(150px, 1fr) minmax(140px, 180px) minmax(90px, 120px) auto;
+      grid-template-columns: minmax(120px, 180px) minmax(150px, 1fr) minmax(126px, 165px) minmax(98px, 130px) minmax(88px, 112px) auto auto auto;
       gap: 9px;
       align-items: end;
     }
@@ -120,6 +120,15 @@
       color: var(--muted);
     }
     .check-field input { width: 18px; height: 18px; accent-color: var(--green); }
+    .color-select {
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 8px;
+      font: inherit;
+      font-weight: 800;
+    }
 
     .setup-actions {
       display: flex;
@@ -140,6 +149,7 @@
     .btn.secondary, .btn.remove { background: #e9ede5; color: var(--ink); }
     .btn.accent { background: var(--lime); color: var(--ink); }
     .btn.remove { min-width: 62px; padding: 0 10px; }
+    .btn:disabled { opacity: .38; cursor: not-allowed; }
     .status { min-height: 18px; color: var(--muted); font-size: 13px; font-weight: 700; }
 
     .preview {
@@ -202,14 +212,13 @@
       align-self: center;
       font-size: clamp(28px, 3.7vw, 58px);
       line-height: .86;
+      color: var(--stat-color, var(--ink));
       opacity: 0;
       transform: translateY(8px);
       transition: opacity .22s ease, transform .22s ease;
     }
     .big-stat.is-visible strong { opacity: 1; transform: translateY(0); }
     .big-stat:nth-child(1) strong { color: var(--red); }
-    .big-stat:nth-child(2) strong { color: var(--amber); }
-    .big-stat:nth-child(3) strong { color: var(--cyan); }
 
     .distribution {
       display: grid;
@@ -424,12 +433,13 @@
         revealMode: data.revealMode || "line",
         averages: [],
         distributions: Array.isArray(data.distributions)
-          ? data.distributions.map((item) => ({
+          ? data.distributions.map((item, index) => ({
               ...item,
               hideBelowMax: item.hideBelowMax || "",
-              showInPresentation: item.showInPresentation !== false
+              showInPresentation: item.showInPresentation !== false,
+              averageColor: item.averageColor || (index === 0 ? "amber" : "")
             }))
-          : [{ label: "クラス度数分布", scores: firstScores, hideBelowMax: "", showInPresentation: true }]
+          : [{ label: "全体度数分布", scores: firstScores, hideBelowMax: "", showInPresentation: true, averageColor: "amber" }]
       };
     }
 
@@ -455,22 +465,65 @@
       return options.map((option) => `<option value="${option.value}"${String(selected) === option.value ? " selected" : ""}>${option.label}</option>`).join("");
     }
 
-    function distributionItem(label = "", scores = "", hideBelowMax = "", showInPresentation = true) {
+    function averageColorOptions(selected = "") {
+      const options = [
+        { value: "", label: "標準" },
+        { value: "amber", label: "黄" },
+        { value: "cyan", label: "青" },
+        { value: "green", label: "緑" },
+        { value: "red", label: "赤" },
+        { value: "ink", label: "黒" }
+      ];
+      return options.map((option) => `<option value="${option.value}"${String(selected) === option.value ? " selected" : ""}>${option.label}</option>`).join("");
+    }
+
+    function distributionItem(label = "", scores = "", hideBelowMax = "", showInPresentation = true, averageColor = "") {
       const item = document.createElement("div");
       item.className = "distribution-item";
       item.innerHTML = `
         <div class="field"><label>分布名</label><input class="distribution-label" value="${escapeAttribute(label)}"></div>
         <div class="field"><label>点数</label><textarea class="distribution-scores">${escapeHtml(scores)}</textarea></div>
         <div class="field"><label>非表示</label><select class="distribution-hide-below">${distributionHideOptions(hideBelowMax)}</select></div>
+        <div class="field"><label>平均色</label><select class="distribution-average-color color-select">${averageColorOptions(averageColor)}</select></div>
         <label class="check-field"><input class="distribution-show" type="checkbox"${showInPresentation ? " checked" : ""}>発表に出す</label>
+        <button class="btn secondary move-up" type="button">↑</button>
+        <button class="btn secondary move-down" type="button">↓</button>
         <button class="btn remove" type="button">削除</button>
       `;
       item.querySelector(".remove").addEventListener("click", () => { item.remove(); render(); });
+      item.querySelector(".move-up").addEventListener("click", () => {
+        const previous = item.previousElementSibling;
+        if (previous) distributionsList.insertBefore(item, previous);
+        lockOverallDistribution();
+        render();
+      });
+      item.querySelector(".move-down").addEventListener("click", () => {
+        const next = item.nextElementSibling;
+        if (next) distributionsList.insertBefore(next, item);
+        lockOverallDistribution();
+        render();
+      });
       item.querySelectorAll("input, textarea, select").forEach((input) => {
         input.addEventListener("input", render);
         input.addEventListener("change", render);
       });
       return item;
+    }
+
+    function lockOverallDistribution() {
+      const first = distributionsList.querySelector(".distribution-item");
+      distributionsList.querySelectorAll(".distribution-item").forEach((item, index) => {
+        const labelInput = item.querySelector(".distribution-label");
+        const removeButton = item.querySelector(".remove");
+        const upButton = item.querySelector(".move-up");
+        const downButton = item.querySelector(".move-down");
+        const isOverall = item === first;
+        if (isOverall) labelInput.value = "全体度数分布";
+        labelInput.readOnly = isOverall;
+        removeButton.disabled = isOverall;
+        upButton.disabled = index <= 1;
+        downButton.disabled = index === 0 || index === distributionsList.children.length - 1;
+      });
     }
 
     function setAverageItems(items) {
@@ -484,8 +537,10 @@
         item.label,
         item.scores,
         item.hideBelowMax || "",
-        item.showInPresentation !== false
+        item.showInPresentation !== false,
+        item.averageColor || ""
       )));
+      lockOverallDistribution();
     }
     function getAverageItems() {
       if (!averagesList) return [];
@@ -499,16 +554,17 @@
         label: item.querySelector(".distribution-label").value.trim(),
         scores: item.querySelector(".distribution-scores").value,
         hideBelowMax: item.querySelector(".distribution-hide-below")?.value || "",
-        showInPresentation: item.querySelector(".distribution-show")?.checked !== false
+        showInPresentation: item.querySelector(".distribution-show")?.checked !== false,
+        averageColor: item.querySelector(".distribution-average-color")?.value || ""
       })).filter((item) => item.label || item.scores);
     }
 
     function currentClassData() {
       const averages = getAverageItems();
       const distributions = getDistributionItems();
-      const allScores = distributions.flatMap((item) => parseScores(item.scores));
-      const calculatedMax = allScores.length ? Math.max(...allScores) : "";
-      const calculatedAverage = allScores.length ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length : "";
+      const overallScores = parseScores(distributions[0]?.scores || "");
+      const calculatedMax = overallScores.length ? Math.max(...overallScores) : "";
+      const calculatedAverage = overallScores.length ? overallScores.reduce((sum, score) => sum + score, 0) / overallScores.length : "";
       return {
         className: classNameInput.value.trim(),
         title: titleInput.value,
@@ -529,7 +585,7 @@
       highestScoreInput.value = normalized.highestScore;
       revealModeSelect.value = normalized.revealMode || "line";
       setAverageItems(normalized.averages.length ? normalized.averages : [{ label: "クラス平均", value: "" }]);
-      setDistributionItems(normalized.distributions.length ? normalized.distributions : [{ label: "クラス度数分布", scores: "" }]);
+      setDistributionItems(normalized.distributions.length ? normalized.distributions : [{ label: "全体度数分布", scores: "", averageColor: "amber" }]);
       render();
     }
 
@@ -625,7 +681,7 @@
       titleInput.value = "";
       highestScoreInput.value = "";
       setAverageItems([{ label: "クラス平均", value: "" }]);
-      setDistributionItems([{ label: "クラス度数分布", scores: "" }]);
+      setDistributionItems([{ label: "全体度数分布", scores: "", averageColor: "amber" }]);
       render();
     }
 
@@ -656,8 +712,8 @@
         distribution: buildDistribution(scores, source?.hideBelowMax || "")
       };
     }
-    function allDistributionScores(distributions = getDistributionItems()) {
-      return distributions.flatMap((item) => parseScores(item.scores));
+    function overallScores(distributions = getDistributionItems()) {
+      return parseScores(distributions[0]?.scores || "");
     }
     function getHighlightAverage() {
       const stats = getStats();
@@ -665,7 +721,7 @@
     }
     function getStats() {
       const distributions = getDistributionItems();
-      const scores = allDistributionScores(distributions);
+      const scores = overallScores(distributions);
       const distribution = buildDistribution(scores);
       const calculatedMax = scores.length ? Math.max(...scores) : 0;
       const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
@@ -677,10 +733,26 @@
       card.className = "big-stat";
       card.dataset.step = "";
       if (options.averageTrigger) card.dataset.averageTrigger = "true";
+      if (options.color) card.style.setProperty("--stat-color", statColor(options.color));
       card.innerHTML = `<span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong>`;
       return card;
     }
+    function statColor(color) {
+      const colors = {
+        amber: "var(--amber)",
+        cyan: "var(--cyan)",
+        green: "var(--green)",
+        red: "var(--red)",
+        ink: "var(--ink)"
+      };
+      return colors[color] || "";
+    }
+    function averageLabel(source) {
+      const label = (source.label || "分布").replace(/度数分布$/, "").trim();
+      return `${label || "分布"}平均`;
+    }
     function render() {
+      lockOverallDistribution();
       const stats = getStats();
       const distributions = getDistributionItems();
       const shownDistributions = distributions.filter((item) => item.showInPresentation !== false);
@@ -694,19 +766,17 @@
 
       mainStats.innerHTML = "";
       mainStats.appendChild(createStatCard("最高点", formatNumber(stats.max)));
-      mainStats.appendChild(createStatCard("全体平均", formatNumber(stats.average), { averageTrigger: true }));
       shownDistributions.forEach((item) => {
         const sourceStats = distributionStats(item);
-        mainStats.appendChild(createStatCard(`${item.label || "分布"}平均`, formatNumber(sourceStats.average)));
+        mainStats.appendChild(createStatCard(averageLabel(item), formatNumber(sourceStats.average), {
+          averageTrigger: item === distributions[0],
+          color: item.averageColor
+        }));
       });
 
       distributionEl.innerHTML = "";
       const revealMode = revealModeSelect.value;
-      const presentationDistributions = [
-        { label: "全体度数分布", scores: stats.scores.join(","), hideBelowMax: "" },
-        ...shownDistributions
-      ];
-      presentationDistributions.forEach((source) => {
+      shownDistributions.forEach((source) => {
         const block = document.createElement("div");
         block.className = "distribution-block";
         if (revealMode === "block") block.dataset.step = "";
@@ -916,7 +986,7 @@
         title: "1学期中間考査",
         highestScore: "98",
         averages: [{ label: "クラス平均", value: "68.4" }, { label: "コース平均", value: "65.8" }],
-        distributions: [{ label: "クラス度数分布", scores: sampleScores }]
+        distributions: [{ label: "全体度数分布", scores: sampleScores, averageColor: "amber" }]
       });
     });
     [classNameInput, titleInput, highestScoreInput, revealModeSelect].forEach((field) => {
@@ -938,7 +1008,7 @@
       title: "1学期中間考査",
       highestScore: "98",
       averages: [{ label: "クラス平均", value: "68.4" }, { label: "コース平均", value: "65.8" }],
-      distributions: [{ label: "クラス度数分布", scores: sampleScores }]
+      distributions: [{ label: "全体度数分布", scores: sampleScores, averageColor: "amber" }]
     });
     renderSavedClassOptions();
     updateSoundToggle();
