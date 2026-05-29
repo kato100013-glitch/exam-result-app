@@ -839,35 +839,54 @@
       if (!context) return;
       const low = context.createOscillator();
       const lowGain = context.createGain();
+      const punch = context.createOscillator();
+      const punchGain = context.createGain();
       const noise = context.createBufferSource();
       const noiseGain = context.createGain();
       const filter = context.createBiquadFilter();
-      const buffer = context.createBuffer(1, Math.floor(context.sampleRate * 0.18), context.sampleRate);
+      const compressor = context.createDynamicsCompressor();
+      const buffer = context.createBuffer(1, Math.floor(context.sampleRate * 0.22), context.sampleRate);
       const data = buffer.getChannelData(0);
       for (let index = 0; index < data.length; index += 1) {
         data[index] = (Math.random() * 2 - 1) * (1 - index / data.length);
       }
+      compressor.threshold.setValueAtTime(-18, start);
+      compressor.knee.setValueAtTime(8, start);
+      compressor.ratio.setValueAtTime(8, start);
+      compressor.attack.setValueAtTime(0.003, start);
+      compressor.release.setValueAtTime(0.18, start);
       low.type = "sine";
-      low.frequency.setValueAtTime(120, start);
-      low.frequency.exponentialRampToValueAtTime(48, start + 0.18);
+      low.frequency.setValueAtTime(150, start);
+      low.frequency.exponentialRampToValueAtTime(42, start + 0.2);
       lowGain.gain.setValueAtTime(0.0001, start);
-      lowGain.gain.exponentialRampToValueAtTime(0.16 * strength, start + 0.012);
-      lowGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.34);
+      lowGain.gain.exponentialRampToValueAtTime(0.36 * strength, start + 0.006);
+      lowGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.38);
+      punch.type = "square";
+      punch.frequency.setValueAtTime(72, start);
+      punch.frequency.exponentialRampToValueAtTime(36, start + 0.09);
+      punchGain.gain.setValueAtTime(0.0001, start);
+      punchGain.gain.exponentialRampToValueAtTime(0.18 * strength, start + 0.004);
+      punchGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.11);
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(360, start);
-      filter.frequency.exponentialRampToValueAtTime(90, start + 0.16);
+      filter.frequency.setValueAtTime(900, start);
+      filter.frequency.exponentialRampToValueAtTime(120, start + 0.18);
       noise.buffer = buffer;
-      noiseGain.gain.setValueAtTime(0.08 * strength, start);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
+      noiseGain.gain.setValueAtTime(0.24 * strength, start);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
       low.connect(lowGain);
-      lowGain.connect(context.destination);
+      lowGain.connect(compressor);
+      punch.connect(punchGain);
+      punchGain.connect(compressor);
       noise.connect(filter);
       filter.connect(noiseGain);
-      noiseGain.connect(context.destination);
+      noiseGain.connect(compressor);
+      compressor.connect(context.destination);
       low.start(start);
-      low.stop(start + 0.36);
+      low.stop(start + 0.4);
+      punch.start(start);
+      punch.stop(start + 0.13);
       noise.start(start);
-      noise.stop(start + 0.18);
+      noise.stop(start + 0.22);
     }
     function playSound(kind) {
       if (!soundEnabled) return;
@@ -875,18 +894,18 @@
       if (!context) return;
       const now = context.currentTime + 0.01;
       if (kind === "start") {
-        playImpact(now, 1.15);
+        playImpact(now, 1.55);
         playTone(392, now + 0.12, 0.16, 0.025, "triangle");
       } else if (kind === "back") {
         playTone(180, now, 0.11, 0.035, "triangle");
         playTone(120, now + 0.07, 0.12, 0.03, "triangle");
       } else if (kind === "bulk") {
-        playImpact(now, 1.25);
-        playImpact(now + 0.11, 0.9);
+        playImpact(now, 1.7);
+        playImpact(now + 0.11, 1.2);
       } else if (kind === "reset") {
         playTone(140, now, 0.12, 0.03, "triangle");
       } else {
-        playImpact(now, 1);
+        playImpact(now, 1.45);
       }
     }
     function resetReveal() {
