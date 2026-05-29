@@ -106,7 +106,7 @@
     }
     .distribution-item {
       display: grid;
-      grid-template-columns: minmax(150px, 230px) 1fr auto;
+      grid-template-columns: minmax(140px, 210px) minmax(150px, 1fr) minmax(140px, 180px) auto;
       gap: 9px;
       align-items: end;
     }
@@ -211,7 +211,7 @@
     }
     .distribution-block {
       display: grid;
-      grid-template-rows: auto repeat(11, minmax(0, 1fr));
+      grid-template-rows: auto repeat(var(--row-count, 11), minmax(0, 1fr));
       gap: clamp(4px, .65vh, 8px);
       min-width: 0;
       min-height: 0;
@@ -420,9 +420,9 @@
           { label: "クラス平均", value: data.classAverage || "68.4" },
           { label: "コース平均", value: data.courseAverage || "65.8" }
         ],
-        distributions: Array.isArray(data.distributions) ? data.distributions : [
-          { label: "クラス度数分布", scores: firstScores }
-        ]
+        distributions: Array.isArray(data.distributions)
+          ? data.distributions.map((item) => ({ ...item, hideBelowMax: item.hideBelowMax || "" }))
+          : [{ label: "クラス度数分布", scores: firstScores, hideBelowMax: "" }]
       };
     }
 
@@ -439,16 +439,26 @@
       return item;
     }
 
-    function distributionItem(label = "", scores = "") {
+    function distributionHideOptions(selected = "") {
+      const options = [{ value: "", label: "すべて表示" }];
+      for (let high = 9; high <= 89; high += 10) {
+        const low = high - 9;
+        options.push({ value: String(high), label: `${low}〜${high}以下を非表示` });
+      }
+      return options.map((option) => `<option value="${option.value}"${String(selected) === option.value ? " selected" : ""}>${option.label}</option>`).join("");
+    }
+
+    function distributionItem(label = "", scores = "", hideBelowMax = "") {
       const item = document.createElement("div");
       item.className = "distribution-item";
       item.innerHTML = `
         <div class="field"><label>分布名</label><input class="distribution-label" value="${escapeAttribute(label)}"></div>
         <div class="field"><label>点数</label><textarea class="distribution-scores">${escapeHtml(scores)}</textarea></div>
+        <div class="field"><label>非表示</label><select class="distribution-hide-below">${distributionHideOptions(hideBelowMax)}</select></div>
         <button class="btn remove" type="button">削除</button>
       `;
       item.querySelector(".remove").addEventListener("click", () => { item.remove(); render(); });
-      item.querySelectorAll("input, textarea").forEach((input) => input.addEventListener("input", render));
+      item.querySelectorAll("input, textarea, select").forEach((input) => input.addEventListener("input", render));
       return item;
     }
 
@@ -458,7 +468,7 @@
     }
     function setDistributionItems(items) {
       distributionsList.innerHTML = "";
-      items.forEach((item) => distributionsList.appendChild(distributionItem(item.label, item.scores)));
+      items.forEach((item) => distributionsList.appendChild(distributionItem(item.label, item.scores, item.hideBelowMax || "")));
     }
     function getAverageItems() {
       return [...averagesList.querySelectorAll(".average-item")].map((item) => ({
@@ -469,7 +479,8 @@
     function getDistributionItems() {
       return [...distributionsList.querySelectorAll(".distribution-item")].map((item) => ({
         label: item.querySelector(".distribution-label").value.trim(),
-        scores: item.querySelector(".distribution-scores").value
+        scores: item.querySelector(".distribution-scores").value,
+        hideBelowMax: item.querySelector(".distribution-hide-below")?.value || ""
       })).filter((item) => item.label || item.scores);
     }
 
@@ -596,7 +607,7 @@
       render();
     }
 
-    function buildDistribution(scores) {
+    function buildDistribution(scores, hideBelowMax = "") {
       const ranges = [{ label: "100", min: 100, max: 100 }];
       for (let high = 99; high >= 19; high -= 10) ranges.push({ label: `${high - 9}〜${high}`, min: high - 9, max: high });
       ranges.push({ label: "0〜9", min: 0, max: 9 });
@@ -606,8 +617,10 @@
         max: range.max,
         count: scores.filter((score) => score >= range.min && score <= range.max).length
       }));
-      const maxCount = niceGraphMax(Math.max(1, ...rows.map((row) => row.count)));
-      return rows.map((row) => ({ ...row, width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%` }));
+      const hiddenMax = Number(hideBelowMax);
+      const visibleRows = Number.isFinite(hiddenMax) ? rows.filter((row) => row.max > hiddenMax) : rows;
+      const maxCount = niceGraphMax(Math.max(1, ...visibleRows.map((row) => row.count)));
+      return visibleRows.map((row) => ({ ...row, width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%` }));
     }
     function firstDistributionScores() { return parseScores(getDistributionItems()[0]?.scores || ""); }
     function getHighlightAverage() {
@@ -616,7 +629,8 @@
     }
     function getStats() {
       const scores = firstDistributionScores();
-      const distribution = buildDistribution(scores);
+      const firstDistribution = getDistributionItems()[0] || {};
+      const distribution = buildDistribution(scores, firstDistribution.hideBelowMax || "");
       const calculatedMax = scores.length ? Math.max(...scores) : 0;
       const enteredMax = Number(highestScoreInput.value);
       const max = Number.isFinite(enteredMax) ? enteredMax : calculatedMax;
@@ -662,7 +676,9 @@
         title.className = "distribution-title";
         title.textContent = source.label || "度数分布";
         block.appendChild(title);
-        buildDistribution(parseScores(source.scores)).forEach((row) => {
+        const rows = buildDistribution(parseScores(source.scores), source.hideBelowMax || "");
+        block.style.setProperty("--row-count", Math.max(rows.length, 1));
+        rows.forEach((row) => {
           const item = document.createElement("div");
           item.className = "dist-row";
           if (Number.isFinite(highlightValue) && highlightValue >= row.min && highlightValue <= row.max) item.classList.add("is-average-band");
