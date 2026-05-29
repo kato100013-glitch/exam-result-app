@@ -106,10 +106,20 @@
     }
     .distribution-item {
       display: grid;
-      grid-template-columns: minmax(140px, 210px) minmax(150px, 1fr) minmax(140px, 180px) auto;
+      grid-template-columns: minmax(130px, 190px) minmax(150px, 1fr) minmax(140px, 180px) minmax(90px, 120px) auto;
       gap: 9px;
       align-items: end;
     }
+    .check-field {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+    .check-field input { width: 18px; height: 18px; accent-color: var(--green); }
 
     .setup-actions {
       display: flex;
@@ -301,8 +311,8 @@
             <input id="examTitle" value="1学期中間考査">
           </div>
           <div class="field">
-            <label for="highestScore">最高点</label>
-            <input id="highestScore" type="number" min="0" max="100" step="0.1" value="98">
+            <label for="highestScore">最高点（自動）</label>
+            <input id="highestScore" type="number" min="0" max="100" step="0.1" value="98" readonly>
           </div>
           <div class="field wide">
             <label for="revealMode">度数分布の出し方</label>
@@ -312,14 +322,6 @@
             </select>
           </div>
         </div>
-
-        <section class="editor-section">
-          <div class="section-head">
-            <h2>平均項目</h2>
-            <button class="btn secondary" id="addAverageBtn" type="button">平均を追加</button>
-          </div>
-          <div class="item-list" id="averagesList"></div>
-        </section>
 
         <section class="editor-section">
           <div class="section-head">
@@ -340,7 +342,7 @@
         <div class="preview" aria-label="集計プレビュー">
           <div class="metric"><span>受験者数</span><strong id="total">0</strong></div>
           <div class="metric"><span>最高点</span><strong id="maxScore">0</strong></div>
-          <div class="metric"><span>入力平均</span><strong id="averageScore">0</strong></div>
+          <div class="metric"><span>全体平均</span><strong id="averageScore">0</strong></div>
           <div class="metric"><span>最多帯</span><strong id="modeBand">-</strong></div>
         </div>
       </div>
@@ -418,15 +420,16 @@
       return {
         className: data.className || "1年A組",
         title: data.title || "1学期中間考査",
-        highestScore: data.highestScore || data.maxScore || data.highest || calculatedMax || "98",
+        highestScore: calculatedMax || data.highestScore || data.maxScore || data.highest || "98",
         revealMode: data.revealMode || "line",
-        averages: Array.isArray(data.averages) ? data.averages : [
-          { label: "クラス平均", value: data.classAverage || "68.4" },
-          { label: "コース平均", value: data.courseAverage || "65.8" }
-        ],
+        averages: [],
         distributions: Array.isArray(data.distributions)
-          ? data.distributions.map((item) => ({ ...item, hideBelowMax: item.hideBelowMax || "" }))
-          : [{ label: "クラス度数分布", scores: firstScores, hideBelowMax: "" }]
+          ? data.distributions.map((item) => ({
+              ...item,
+              hideBelowMax: item.hideBelowMax || "",
+              showInPresentation: item.showInPresentation !== false
+            }))
+          : [{ label: "クラス度数分布", scores: firstScores, hideBelowMax: "", showInPresentation: true }]
       };
     }
 
@@ -452,29 +455,40 @@
       return options.map((option) => `<option value="${option.value}"${String(selected) === option.value ? " selected" : ""}>${option.label}</option>`).join("");
     }
 
-    function distributionItem(label = "", scores = "", hideBelowMax = "") {
+    function distributionItem(label = "", scores = "", hideBelowMax = "", showInPresentation = true) {
       const item = document.createElement("div");
       item.className = "distribution-item";
       item.innerHTML = `
         <div class="field"><label>分布名</label><input class="distribution-label" value="${escapeAttribute(label)}"></div>
         <div class="field"><label>点数</label><textarea class="distribution-scores">${escapeHtml(scores)}</textarea></div>
         <div class="field"><label>非表示</label><select class="distribution-hide-below">${distributionHideOptions(hideBelowMax)}</select></div>
+        <label class="check-field"><input class="distribution-show" type="checkbox"${showInPresentation ? " checked" : ""}>発表に出す</label>
         <button class="btn remove" type="button">削除</button>
       `;
       item.querySelector(".remove").addEventListener("click", () => { item.remove(); render(); });
-      item.querySelectorAll("input, textarea, select").forEach((input) => input.addEventListener("input", render));
+      item.querySelectorAll("input, textarea, select").forEach((input) => {
+        input.addEventListener("input", render);
+        input.addEventListener("change", render);
+      });
       return item;
     }
 
     function setAverageItems(items) {
+      if (!averagesList) return;
       averagesList.innerHTML = "";
       items.forEach((item) => averagesList.appendChild(averageItem(item.label, item.value)));
     }
     function setDistributionItems(items) {
       distributionsList.innerHTML = "";
-      items.forEach((item) => distributionsList.appendChild(distributionItem(item.label, item.scores, item.hideBelowMax || "")));
+      items.forEach((item) => distributionsList.appendChild(distributionItem(
+        item.label,
+        item.scores,
+        item.hideBelowMax || "",
+        item.showInPresentation !== false
+      )));
     }
     function getAverageItems() {
+      if (!averagesList) return [];
       return [...averagesList.querySelectorAll(".average-item")].map((item) => ({
         label: item.querySelector(".average-label").value.trim(),
         value: item.querySelector(".average-value").value
@@ -484,22 +498,26 @@
       return [...distributionsList.querySelectorAll(".distribution-item")].map((item) => ({
         label: item.querySelector(".distribution-label").value.trim(),
         scores: item.querySelector(".distribution-scores").value,
-        hideBelowMax: item.querySelector(".distribution-hide-below")?.value || ""
+        hideBelowMax: item.querySelector(".distribution-hide-below")?.value || "",
+        showInPresentation: item.querySelector(".distribution-show")?.checked !== false
       })).filter((item) => item.label || item.scores);
     }
 
     function currentClassData() {
       const averages = getAverageItems();
       const distributions = getDistributionItems();
+      const allScores = distributions.flatMap((item) => parseScores(item.scores));
+      const calculatedMax = allScores.length ? Math.max(...allScores) : "";
+      const calculatedAverage = allScores.length ? allScores.reduce((sum, score) => sum + score, 0) / allScores.length : "";
       return {
         className: classNameInput.value.trim(),
         title: titleInput.value,
-        highestScore: highestScoreInput.value,
+        highestScore: calculatedMax,
         revealMode: revealModeSelect.value,
         averages,
         distributions,
-        classAverage: averages.find((item) => item.label.includes("クラス"))?.value || averages[0]?.value || "",
-        courseAverage: averages.find((item) => item.label.includes("コース"))?.value || averages[1]?.value || "",
+        classAverage: calculatedAverage,
+        courseAverage: calculatedAverage,
         scores: distributions[0]?.scores || ""
       };
     }
@@ -626,21 +644,33 @@
       const maxCount = niceGraphMax(Math.max(1, ...visibleRows.map((row) => row.count)));
       return visibleRows.map((row) => ({ ...row, width: `${Math.max(row.count ? 6 : 0, (row.count / maxCount) * 100)}%` }));
     }
-    function firstDistributionScores() { return parseScores(getDistributionItems()[0]?.scores || ""); }
+    function distributionStats(source) {
+      const scores = parseScores(source?.scores || "");
+      const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
+      const max = scores.length ? Math.max(...scores) : 0;
+      return {
+        ...source,
+        scores,
+        average,
+        max,
+        distribution: buildDistribution(scores, source?.hideBelowMax || "")
+      };
+    }
+    function allDistributionScores(distributions = getDistributionItems()) {
+      return distributions.flatMap((item) => parseScores(item.scores));
+    }
     function getHighlightAverage() {
-      const averages = getAverageItems();
-      return averages.find((item) => item.label.includes("クラス")) || averages[0] || null;
+      const stats = getStats();
+      return { label: "全体平均", value: stats.average };
     }
     function getStats() {
-      const scores = firstDistributionScores();
-      const firstDistribution = getDistributionItems()[0] || {};
-      const distribution = buildDistribution(scores, firstDistribution.hideBelowMax || "");
+      const distributions = getDistributionItems();
+      const scores = allDistributionScores(distributions);
+      const distribution = buildDistribution(scores);
       const calculatedMax = scores.length ? Math.max(...scores) : 0;
-      const enteredMax = Number(highestScoreInput.value);
-      const max = Number.isFinite(enteredMax) ? enteredMax : calculatedMax;
       const average = scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
       const mode = distribution.reduce((best, row) => row.count > best.count ? row : best, distribution[0]);
-      return { scores, distribution, max, average, mode };
+      return { scores, distribution, max: calculatedMax, average, mode };
     }
     function createStatCard(label, value, options = {}) {
       const card = document.createElement("div");
@@ -652,27 +682,31 @@
     }
     function render() {
       const stats = getStats();
-      const averages = getAverageItems();
       const distributions = getDistributionItems();
-      const highlightAverage = getHighlightAverage();
-      const highlightValue = Number(highlightAverage?.value);
+      const shownDistributions = distributions.filter((item) => item.showInPresentation !== false);
+      const highlightValue = Number(stats.average);
       document.querySelector("#total").textContent = stats.scores.length;
       document.querySelector("#maxScore").textContent = formatNumber(stats.max);
       document.querySelector("#averageScore").textContent = formatNumber(stats.average);
       document.querySelector("#modeBand").textContent = stats.mode ? stats.mode.label : "-";
+      highestScoreInput.value = formatNumber(stats.max);
       document.querySelector("#boardTitle").textContent = titleInput.value || "定期考査 結果発表";
 
       mainStats.innerHTML = "";
       mainStats.appendChild(createStatCard("最高点", formatNumber(stats.max)));
-      averages.forEach((item) => {
-        mainStats.appendChild(createStatCard(item.label || "平均", formatNumber(Number(item.value)), {
-          averageTrigger: highlightAverage && item === highlightAverage
-        }));
+      mainStats.appendChild(createStatCard("全体平均", formatNumber(stats.average), { averageTrigger: true }));
+      shownDistributions.forEach((item) => {
+        const sourceStats = distributionStats(item);
+        mainStats.appendChild(createStatCard(`${item.label || "分布"}平均`, formatNumber(sourceStats.average)));
       });
 
       distributionEl.innerHTML = "";
       const revealMode = revealModeSelect.value;
-      distributions.forEach((source) => {
+      const presentationDistributions = [
+        { label: "全体度数分布", scores: stats.scores.join(","), hideBelowMax: "" },
+        ...shownDistributions
+      ];
+      presentationDistributions.forEach((source) => {
         const block = document.createElement("div");
         block.className = "distribution-block";
         if (revealMode === "block") block.dataset.step = "";
@@ -829,7 +863,7 @@
       updateSoundToggle();
       if (soundEnabled) playSound("next");
     });
-    document.querySelector("#addAverageBtn").addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
+    document.querySelector("#addAverageBtn")?.addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
     document.querySelector("#addDistributionBtn").addEventListener("click", () => { distributionsList.appendChild(distributionItem("度数分布", "")); render(); });
     document.querySelector("#saveClassBtn").addEventListener("click", saveCurrentClass);
     document.querySelector("#loadClassBtn").addEventListener("click", loadSelectedClass);
