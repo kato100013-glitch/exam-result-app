@@ -764,24 +764,59 @@
       oscillator.start(start);
       oscillator.stop(start + duration + 0.02);
     }
+    function playImpact(start, strength = 1) {
+      const context = ensureAudioContext();
+      if (!context) return;
+      const low = context.createOscillator();
+      const lowGain = context.createGain();
+      const noise = context.createBufferSource();
+      const noiseGain = context.createGain();
+      const filter = context.createBiquadFilter();
+      const buffer = context.createBuffer(1, Math.floor(context.sampleRate * 0.18), context.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let index = 0; index < data.length; index += 1) {
+        data[index] = (Math.random() * 2 - 1) * (1 - index / data.length);
+      }
+      low.type = "sine";
+      low.frequency.setValueAtTime(120, start);
+      low.frequency.exponentialRampToValueAtTime(48, start + 0.18);
+      lowGain.gain.setValueAtTime(0.0001, start);
+      lowGain.gain.exponentialRampToValueAtTime(0.16 * strength, start + 0.012);
+      lowGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.34);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(360, start);
+      filter.frequency.exponentialRampToValueAtTime(90, start + 0.16);
+      noise.buffer = buffer;
+      noiseGain.gain.setValueAtTime(0.08 * strength, start);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
+      low.connect(lowGain);
+      lowGain.connect(context.destination);
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(context.destination);
+      low.start(start);
+      low.stop(start + 0.36);
+      noise.start(start);
+      noise.stop(start + 0.18);
+    }
     function playSound(kind) {
       if (!soundEnabled) return;
       const context = ensureAudioContext();
       if (!context) return;
       const now = context.currentTime + 0.01;
       if (kind === "start") {
-        playTone(523.25, now, 0.12);
-        playTone(783.99, now + 0.11, 0.16);
+        playImpact(now, 1.15);
+        playTone(392, now + 0.12, 0.16, 0.025, "triangle");
       } else if (kind === "back") {
-        playTone(392, now, 0.08, 0.035, "triangle");
-        playTone(261.63, now + 0.07, 0.11, 0.035, "triangle");
+        playTone(180, now, 0.11, 0.035, "triangle");
+        playTone(120, now + 0.07, 0.12, 0.03, "triangle");
       } else if (kind === "bulk") {
-        [440, 554.37, 659.25, 880].forEach((frequency, index) => playTone(frequency, now + index * 0.045, 0.08, 0.035));
+        playImpact(now, 1.25);
+        playImpact(now + 0.11, 0.9);
       } else if (kind === "reset") {
-        playTone(330, now, 0.09, 0.03, "triangle");
+        playTone(140, now, 0.12, 0.03, "triangle");
       } else {
-        playTone(659.25, now, 0.075, 0.04);
-        playTone(987.77, now + 0.055, 0.09, 0.035);
+        playImpact(now, 1);
       }
     }
     function resetReveal() {
