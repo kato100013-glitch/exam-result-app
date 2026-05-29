@@ -358,6 +358,7 @@
         <button class="btn accent" id="nextBtn" type="button">次を発表</button>
         <button class="btn secondary" id="bulkBtn" type="button">分布一括</button>
         <button class="btn secondary" id="resetRevealBtn" type="button">最初から</button>
+        <button class="btn secondary" id="soundToggleBtn" type="button">音 ON</button>
         <span class="progress" id="progress">0 / 0</span>
       </div>
     </section>
@@ -378,11 +379,14 @@
     const boardEl = document.querySelector("#board");
     const distributionEl = document.querySelector("#distribution");
     const progressEl = document.querySelector("#progress");
+    const soundToggleBtn = document.querySelector("#soundToggleBtn");
     const statusText = document.querySelector("#statusText");
     const storageKey = "exam-result-app.classes";
     const scriptUrlKey = "exam-result-app.scriptUrl";
     const sampleScores = "98, 96, 94, 93, 88, 87, 85, 82, 78, 76, 75, 72, 70, 69, 66, 64, 62, 60, 58, 55, 54, 52, 49, 46, 44, 40, 38, 34, 28, 21";
     let revealIndex = 0;
+    let soundEnabled = true;
+    let audioContext = null;
 
     function setStatus(message) { statusText.textContent = message; }
     function escapeHtml(value) {
@@ -701,6 +705,51 @@
       progressEl.textContent = `${revealIndex} / ${revealItems().length}`;
       document.querySelector("#nextBtn").textContent = revealIndex >= revealItems().length ? "発表済み" : "次を発表";
     }
+    function updateSoundToggle() {
+      soundToggleBtn.textContent = soundEnabled ? "音 ON" : "音 OFF";
+    }
+    function ensureAudioContext() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === "suspended") audioContext.resume();
+      return audioContext;
+    }
+    function playTone(frequency, start, duration, gain = 0.045, type = "sine") {
+      const context = ensureAudioContext();
+      if (!context) return;
+      const oscillator = context.createOscillator();
+      const volume = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      volume.gain.setValueAtTime(0.0001, start);
+      volume.gain.exponentialRampToValueAtTime(gain, start + 0.015);
+      volume.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(volume);
+      volume.connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.02);
+    }
+    function playSound(kind) {
+      if (!soundEnabled) return;
+      const context = ensureAudioContext();
+      if (!context) return;
+      const now = context.currentTime + 0.01;
+      if (kind === "start") {
+        playTone(523.25, now, 0.12);
+        playTone(783.99, now + 0.11, 0.16);
+      } else if (kind === "back") {
+        playTone(392, now, 0.08, 0.035, "triangle");
+        playTone(261.63, now + 0.07, 0.11, 0.035, "triangle");
+      } else if (kind === "bulk") {
+        [440, 554.37, 659.25, 880].forEach((frequency, index) => playTone(frequency, now + index * 0.045, 0.08, 0.035));
+      } else if (kind === "reset") {
+        playTone(330, now, 0.09, 0.03, "triangle");
+      } else {
+        playTone(659.25, now, 0.075, 0.04);
+        playTone(987.77, now + 0.055, 0.09, 0.035);
+      }
+    }
     function resetReveal() {
       revealIndex = 0;
       boardEl.classList.remove("graph-visible", "average-visible");
@@ -726,7 +775,9 @@
       updateProgress();
     }
     function revealNext() {
+      const before = revealIndex;
       setRevealIndex(revealIndex + 1);
+      if (revealIndex > before) playSound("next");
     }
     function revealBulk() {
       const items = revealItems();
@@ -745,16 +796,21 @@
       ) {
         nextIndex += 1;
       }
+      const before = revealIndex;
       setRevealIndex(nextIndex);
+      if (revealIndex > before) playSound("bulk");
     }
     function revealPrevious() {
+      const before = revealIndex;
       setRevealIndex(revealIndex - 1);
+      if (revealIndex < before) playSound("back");
     }
     function openPresentation() {
       render();
       setupScreen.hidden = true;
       presentScreen.hidden = false;
       resetReveal();
+      playSound("start");
     }
 
     function isEditingText(event) {
@@ -767,7 +823,12 @@
     document.querySelector("#prevBtn").addEventListener("click", revealPrevious);
     document.querySelector("#nextBtn").addEventListener("click", revealNext);
     document.querySelector("#bulkBtn").addEventListener("click", revealBulk);
-    document.querySelector("#resetRevealBtn").addEventListener("click", resetReveal);
+    document.querySelector("#resetRevealBtn").addEventListener("click", () => { resetReveal(); playSound("reset"); });
+    soundToggleBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      updateSoundToggle();
+      if (soundEnabled) playSound("next");
+    });
     document.querySelector("#addAverageBtn").addEventListener("click", () => { averagesList.appendChild(averageItem("平均", "")); render(); });
     document.querySelector("#addDistributionBtn").addEventListener("click", () => { distributionsList.appendChild(distributionItem("度数分布", "")); render(); });
     document.querySelector("#saveClassBtn").addEventListener("click", saveCurrentClass);
@@ -811,6 +872,7 @@
       distributions: [{ label: "クラス度数分布", scores: sampleScores }]
     });
     renderSavedClassOptions();
+    updateSoundToggle();
     if (scriptUrlInput.value) syncFromCloud().catch(() => {});
   </script>
 </body>
